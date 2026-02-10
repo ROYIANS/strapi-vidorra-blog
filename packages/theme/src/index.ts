@@ -1,15 +1,7 @@
-// Theme system core
-export interface Theme {
-    name: string;
-    colors: Record<string, string>;
-    fonts: Record<string, string>;
-}
+// 主题系统入口
+export * from './types'
+export * from './themes'
+export * from './theme-engine'
 
-export const defaultTheme: Theme = {
-    name: 'vidorra-default',
-    colors: {
-        primary: '#699054',
-        'primary-hover': '#84a476',
-    },
-    fonts: {},
-};
+// 导出默认主题
+export { vidorraTheme as defaultTheme } from './themes'
