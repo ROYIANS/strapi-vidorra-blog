@@ -1,59 +1,39 @@
-import { ThemeToggle } from '@/components/theme-toggle'
 import Link from 'next/link'
+import { fetchPosts, fetchStickyPosts, fetchCategories } from '@/services'
+import { HomePostList } from '@/components/home/HomePostList'
+import { HomeSidebarAuthor } from '@/components/home/HomeSidebarAuthor'
+import { HomeRecommend } from '@/components/home/HomeRecommend'
 
-export default function Home() {
+export default async function Home() {
+  const [postsData, stickyPosts, categories] = await Promise.all([
+    fetchPosts(1, 10),
+    fetchStickyPosts(),
+    fetchCategories(),
+  ])
+
   return (
-    <div className="min-h-screen p-8">
-      <header className="mb-8">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <h1 className="text-3xl font-bold" style={{ color: 'var(--primary)' }}>
-            Vidorra Blog
-          </h1>
-          <div className="flex items-center gap-4">
-            <Link
-              href="/posts"
-              className="px-4 py-2 rounded-lg font-medium transition-colors hover:bg-[var(--muted)]"
-            >
-              文章列表
-            </Link>
-            <ThemeToggle />
-          </div>
+    <div className="flex flex-wrap items-stretch p-5 gap-4 max-md:p-2 max-md:block">
+      {/* Main Content */}
+      <section className="order-1 grow shrink-0 basis-2/3 h-auto relative overflow-x-hidden max-xl:w-full max-xl:basis-full">
+        {/* Recommend Area */}
+        <div className="bg-white dark:bg-zinc-900 dark:bg-opacity-80 rounded-sm border relative dark:border-zinc-800 bg-opacity-80">
+          <HomeRecommend posts={stickyPosts} />
         </div>
-      </header>
 
-      <main className="max-w-6xl mx-auto">
-        <div className="rounded-lg p-8" style={{ backgroundColor: 'var(--card)' }}>
-          <h2 className="text-2xl font-semibold mb-4">
-            欢迎来到 Vidorra Blog 🎉
-          </h2>
-          <p className="mb-4" style={{ color: 'var(--muted-foreground)' }}>
-            一款对标 Medium 的现代化博客系统
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-            <div className="p-4 rounded border" style={{ borderColor: 'var(--border)' }}>
-              <h3 className="font-semibold mb-2">🎨 主题系统</h3>
-              <p style={{ color: 'var(--muted-foreground)', fontSize: '0.875rem' }}>
-                支持自定义主题和深浅色模式切换
-              </p>
-            </div>
-
-            <div className="p-4 rounded border" style={{ borderColor: 'var(--border)' }}>
-              <h3 className="font-semibold mb-2">📅 心情日历</h3>
-              <p style={{ color: 'var(--muted-foreground)', fontSize: '0.875rem' }}>
-                每日签到记录心情和生活瞬间
-              </p>
-            </div>
-
-            <div className="p-4 rounded border" style={{ borderColor: 'var(--border)' }}>
-              <h3 className="font-semibold mb-2">📝 优雅排版</h3>
-              <p style={{ color: 'var(--muted-foreground)', fontSize: '0.875rem' }}>
-                Medium 级别的阅读体验
-              </p>
-            </div>
-          </div>
+        {/* Post List */}
+        <div className="bg-white dark:bg-zinc-900 dark:bg-opacity-80 rounded-sm border relative dark:border-zinc-800 bg-opacity-80 mt-3">
+          <HomePostList
+            posts={postsData.posts}
+            categories={categories}
+            totalPosts={postsData.total}
+          />
         </div>
-      </main>
+      </section>
+
+      {/* Sidebar Widgets */}
+      <section className="order-2 grow-0 shrink basis-1/5 sticky h-max top-5 max-xl:relative max-xl:top-0 max-xl:mt-4">
+        <HomeSidebarAuthor />
+      </section>
     </div>
   )
 }

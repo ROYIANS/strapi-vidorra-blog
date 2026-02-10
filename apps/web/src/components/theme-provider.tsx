@@ -81,11 +81,7 @@ export function ThemeProvider({
         setMode(newMode)
     }
 
-    // 防止服务端渲染闪烁
-    if (!mounted) {
-        return <>{children}</>
-    }
-
+    // 始终提供 context，防止服务端渲染时出错
     return (
         <ThemeContext.Provider value={{ theme, mode, setTheme, setMode, toggleMode }}>
             {children}

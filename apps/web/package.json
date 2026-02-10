@@ -27,9 +27,11 @@
     "zustand": "catalog:"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.18",
     "@types/node": "catalog:",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "catalog:",
     "eslint-config-next": "^15",
     "postcss": "catalog:",
