@@ -1,0 +1,129 @@
+version: '3.8'
+
+services:
+  # PostgreSQL 数据库
+  postgres:
+    image: postgres:15-alpine
+    container_name: vidorra-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-vidorra_blog}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - vidorra-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Strapi CMS (可选)
+  strapi:
+    build:
+      context: ..
+      dockerfile: docker/strapi.Dockerfile
+    container_name: vidorra-strapi
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: ${POSTGRES_DB:-vidorra_blog}
+      DATABASE_USERNAME: ${POSTGRES_USER:-postgres}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      APP_KEYS: ${STRAPI_APP_KEYS}
+      API_TOKEN_SALT: ${STRAPI_API_TOKEN_SALT}
+      ADMIN_JWT_SECRET: ${STRAPI_ADMIN_JWT_SECRET}
+      JWT_SECRET: ${STRAPI_JWT_SECRET}
+    volumes:
+      - strapi_uploads:/opt/app/public/uploads
+      - ../backend/strapi:/opt/app
+      - /opt/app/node_modules
+    ports:
+      - "1337:1337"
+    networks:
+      - vidorra-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:1337/_health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Next.js 前台应用
+  web:
+    build:
+      context: ..
+      dockerfile: docker/web.Dockerfile
+      args:
+        - NODE_ENV=production
+    container_name: vidorra-web
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      NEXT_PUBLIC_STRAPI_URL: ${NEXT_PUBLIC_STRAPI_URL:-http://strapi:1337}
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
+    ports:
+      - "3000:3000"
+    networks:
+      - vidorra-network
+    depends_on:
+      - strapi
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # React + Vite 后台应用
+  admin:
+    build:
+      context: ..
+      dockerfile: docker/admin.Dockerfile
+      args:
+        - NODE_ENV=production
+    container_name: vidorra-admin
+    restart: unless-stopped
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-http://strapi:1337/api}
+    ports:
+      - "5173:80"
+    networks:
+      - vidorra-network
+    depends_on:
+      - strapi
+
+  # Nginx 反向代理 (可选)
+  nginx:
+    image: nginx:alpine
+    container_name: vidorra-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    networks:
+      - vidorra-network
+    depends_on:
+      - web
+      - admin
+      - strapi
+    profiles:
+      - with-nginx
+
+networks:
+  vidorra-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  strapi_uploads:

@@ -1,0 +1,6 @@
+# Docker 相关
+.env.docker
+
+# SSL 证书
+nginx/ssl/*
+!nginx/ssl/.gitkeep
