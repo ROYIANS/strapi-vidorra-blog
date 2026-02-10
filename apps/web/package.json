@@ -1,35 +1,33 @@
 {
-    "name": "web",
-    "version": "0.0.1",
-    "private": true,
-    "scripts": {
-        "dev": "next dev",
-        "build": "next build",
-        "start": "next start",
-        "lint": "next lint",
-        "typecheck": "tsc --noEmit"
-    },
-    "dependencies": {
-        "next": "catalog:",
-        "react": "catalog:",
-        "react-dom": "catalog:",
-        "tailwindcss": "catalog:",
-        "autoprefixer": "catalog:",
-        "postcss": "catalog:",
-        "zustand": "catalog:",
-        "@tanstack/react-query": "catalog:",
-        "zod": "catalog:",
-        "@vidorra/ui": "workspace:*",
-        "@vidorra/theme": "workspace:*",
-        "@vidorra/utils": "workspace:*",
-        "@vidorra/types": "workspace:*"
-    },
-    "devDependencies": {
-        "@types/node": "catalog:",
-        "@types/react": "^18.2.0",
-        "@types/react-dom": "^18.2.0",
-        "typescript": "catalog:",
-        "eslint": "catalog:",
-        "eslint-config-next": "^14.1.0"
-    }
+  "name": "web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "next": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "zustand": "catalog:",
+    "@tanstack/react-query": "catalog:",
+    "zod": "catalog:",
+    "@vidorra/ui": "workspace:*",
+    "@vidorra/theme": "workspace:*",
+    "@vidorra/utils": "workspace:*",
+    "@vidorra/types": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "postcss": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-next": "^15"
+  }
 }

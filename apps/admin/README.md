@@ -1,63 +1,119 @@
-# Admin 后台应用
+# Shadcn Admin Dashboard
 
-基于 shadcn-admin 架构的管理后台。
+Admin Dashboard UI crafted with Shadcn and Vite. Built with responsiveness and accessibility in mind.
 
-## 技术栈
+![alt text](public/images/shadcn-admin.png)
 
-- **UI 框架**: React 18
-- **构建工具**: Vite
-- **UI 组件**: shadcn/ui (Radix UI + TailwindCSS)
-- **路由**: TanStack Router
-- **状态管理**: Zustand
-- **数据获取**: TanStack Query (React Query)
-- **表单**: React Hook Form + Zod
-- **图表**: Recharts
-- **图标**: Lucide Icons
+[![Sponsored by Clerk](https://img.shields.io/badge/Sponsored%20by-Clerk-5b6ee1?logo=clerk)](https://go.clerk.com/GttUAaK)
 
-## 项目结构
+I've been creating dashboard UIs at work and for my personal projects. I always wanted to make a reusable collection of dashboard UI for future projects; and here it is now. While I've created a few custom components, some of the code is directly adapted from ShadcnUI examples.
 
-```
-apps/admin/
-├── src/
-│   ├── components/       # UI组件
-│   │   └── ui/          # shadcn/ui 组件
-│   ├── features/        # 功能模块
-│   ├── routes/          # TanStack Router 路由
-│   ├── lib/             # 工具函数
-│   ├── hooks/           # 自定义 Hooks
-│   ├── stores/          # Zustand stores
-│   ├── config/          # 配置文件
-│   └── main.tsx         # 入口文件
-├── public/              # 静态资源
-├── vite.config.ts
-├── tailwind.config.js
-├── components.json      # shadcn/ui 配置
-└── package.json
-```
+> This is not a starter project (template) though. I'll probably make one in the future.
 
-## 快速开始
+## Features
+
+- Light/dark mode
+- Responsive
+- Accessible
+- With built-in Sidebar component
+- Global search command
+- 10+ pages
+- Extra custom components
+- RTL support
+
+<details>
+<summary>Customized Components (click to expand)</summary>
+
+This project uses Shadcn UI components, but some have been slightly modified for better RTL (Right-to-Left) support and other improvements. These customized components differ from the original Shadcn UI versions.
+
+If you want to update components using the Shadcn CLI (e.g., `npx shadcn@latest add <component>`), it's generally safe for non-customized components. For the listed customized ones, you may need to manually merge changes to preserve the project's modifications and avoid overwriting RTL support or other updates.
+
+> If you don't require RTL support, you can safely update the 'RTL Updated Components' via the Shadcn CLI, as these changes are primarily for RTL compatibility. The 'Modified Components' may have other customizations to consider.
+
+### Modified Components
+
+- scroll-area
+- sonner
+- separator
+
+### RTL Updated Components
+
+- alert-dialog
+- calendar
+- command
+- dialog
+- dropdown-menu
+- select
+- table
+- sheet
+- sidebar
+- switch
+
+**Notes:**
+
+- **Modified Components**: These have general updates, potentially including RTL adjustments.
+- **RTL Updated Components**: These have specific changes for RTL language support (e.g., layout, positioning).
+- For implementation details, check the source files in `src/components/ui/`.
+- All other Shadcn UI components in the project are standard and can be safely updated via the CLI.
+
+</details>
+
+## Tech Stack
+
+**UI:** [ShadcnUI](https://ui.shadcn.com) (TailwindCSS + RadixUI)
+
+**Build Tool:** [Vite](https://vitejs.dev/)
+
+**Routing:** [TanStack Router](https://tanstack.com/router/latest)
+
+**Type Checking:** [TypeScript](https://www.typescriptlang.org/)
+
+**Linting/Formatting:** [ESLint](https://eslint.org/) & [Prettier](https://prettier.io/)
+
+**Icons:** [Lucide Icons](https://lucide.dev/icons/), [Tabler Icons](https://tabler.io/icons) (Brand icons only)
+
+**Auth (partial):** [Clerk](https://go.clerk.com/GttUAaK)
+
+## Run Locally
+
+Clone the project
 
 ```bash
-# 安装依赖
-pnpm install
-
-# 启动开发服务器
-pnpm --filter admin dev
-
-# 构建生产版本
-pnpm --filter admin build
+  git clone https://github.com/satnaing/shadcn-admin.git
 ```
 
-## 参考项目
+Go to the project directory
 
-本架构参考 [shadcn-admin](../../docs/backend/) 项目。
+```bash
+  cd shadcn-admin
+```
 
-## 特性
+Install dependencies
 
-- ✅ 响应式设计
-- ✅ 深色/浅色模式
-- ✅ 全局搜索命令
-- ✅ 侧边栏导航
-- ✅ 表单验证
-- ✅ 数据表格
-- ✅ 图表展示
+```bash
+  pnpm install
+```
+
+Start the server
+
+```bash
+  pnpm run dev
+```
+
+## Sponsoring this project ❤️
+
+If you find this project helpful or use this in your own work, consider [sponsoring me](https://github.com/sponsors/satnaing) to support development and maintenance. You can [buy me a coffee](https://buymeacoffee.com/satnaing) as well. Don’t worry, every penny helps. Thank you! 🙏
+
+For questions or sponsorship inquiries, feel free to reach out at [satnaingdev@gmail.com](mailto:satnaingdev@gmail.com).
+
+### Current Sponsor
+
+- [Clerk](https://go.clerk.com/GttUAaK) - authentication and user management for the modern web
+
+## Author
+
+Crafted with 🤍 by [@satnaing](https://github.com/satnaing)
+
+## License
+
+Licensed under the [MIT License](https://choosealicense.com/licenses/mit/)
