@@ -1,0 +1,127 @@
+// Prisma Schema for Vidorra Blog
+// Database: PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== 用户模型 ====================
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  username  String   @unique
+  password  String
+  name      String?
+  avatar    String?
+  bio       String?
+  role      Role     @default(USER)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  posts Post[]
+  moods Mood[]
+
+  @@map("users")
+}
+
+enum Role {
+  USER
+  ADMIN
+  EDITOR
+}
+
+// ==================== 文章模型 ====================
+
+model Post {
+  id          String       @id @default(uuid())
+  title       String
+  slug        String       @unique
+  description String?
+  content     String
+  excerpt     String?
+  cover       String?
+  published   Boolean      @default(false)
+  recommend   Boolean      @default(false)
+  displayMode DisplayMode? @default(NORMAL)
+  readTime    Int?
+  wordCount   Int?
+  date        DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // 关系字段
+  authorId   String
+  author     User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  tags       Tag[]
+
+  @@index([slug])
+  @@index([published])
+  @@index([date])
+  @@index([authorId])
+  @@index([categoryId])
+  @@map("posts")
+}
+
+enum DisplayMode {
+  LARGE
+  NORMAL
+}
+
+// ==================== 分类模型 ====================
+
+model Category {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  posts Post[]
+
+  @@index([slug])
+  @@map("categories")
+}
+
+// ==================== 标签模型 ====================
+
+model Tag {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  posts Post[]
+
+  @@index([slug])
+  @@map("tags")
+}
+
+// ==================== 心情模型 ====================
+
+model Mood {
+  id          String   @id @default(uuid())
+  date        DateTime @unique
+  mood        String
+  name        String?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([date])
+  @@index([userId])
+  @@map("moods")
+}
+

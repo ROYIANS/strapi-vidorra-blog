@@ -5,17 +5,19 @@ import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
+import { useUsers } from '@/hooks/use-users'
 import { UsersDialogs } from './components/users-dialogs'
 import { UsersPrimaryButtons } from './components/users-primary-buttons'
 import { UsersProvider } from './components/users-provider'
 import { UsersTable } from './components/users-table'
-import { users } from './data/users'
 
 const route = getRouteApi('/_authenticated/users/')
 
 export function Users() {
   const search = route.useSearch()
   const navigate = route.useNavigate()
+
+  const { data, isLoading } = useUsers(search.page || 1, search.pageSize || 10)
 
   return (
     <UsersProvider>
@@ -38,7 +40,13 @@ export function Users() {
           </div>
           <UsersPrimaryButtons />
         </div>
-        <UsersTable data={users} search={search} navigate={navigate} />
+        <UsersTable
+          data={data?.data || []}
+          meta={data?.meta}
+          isLoading={isLoading}
+          search={search}
+          navigate={navigate}
+        />
       </Main>
 
       <UsersDialogs />
