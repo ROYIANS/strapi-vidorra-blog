@@ -123,8 +123,8 @@ export const vidorraTheme: Theme = {
         },
     },
     fonts: {
-        sans: '"Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-        serif: '"Noto Serif SC", "Newsreader", "Source Han Serif SC", serif',
+        sans: '"Oswald", "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        serif: '"Newsreader", "Noto Serif SC", "Source Han Serif SC", serif',
         mono: '"JetBrains Mono", "Fira Code", Consolas, Monaco, "Courier New", monospace',
     },
 }

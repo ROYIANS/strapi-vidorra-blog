@@ -3,10 +3,21 @@ import type { Theme, ThemeColors } from './types'
 /**
  * 应用主题到 DOM
  * 通过 CSS 变量实现主题切换
+ *
+ * @param theme - 主题配置
+ * @param mode - 亮色/暗色模式
+ * @param options - 可选配置
  */
-export function applyTheme(theme: Theme, mode: 'light' | 'dark' = 'light') {
+export function applyTheme(
+    theme: Theme,
+    mode: 'light' | 'dark' = 'light',
+    options: {
+        applyFonts?: boolean  // 是否应用字体，默认 true
+    } = {}
+) {
     if (typeof document === 'undefined') return
 
+    const { applyFonts = true } = options
     const root = document.documentElement
     const colors = theme.colors[mode]
 
@@ -17,8 +28,9 @@ export function applyTheme(theme: Theme, mode: 'light' | 'dark' = 'light') {
         root.style.setProperty(`--${cssKey}`, value)
     })
 
-    // 应用字体变量
-    if (theme.fonts) {
+    // 应用字体变量（每个主题可以有不同的字体）
+    // globals.css 中的字体定义作为默认值，主题字体会覆盖它们
+    if (applyFonts && theme.fonts) {
         Object.entries(theme.fonts).forEach(([key, value]) => {
             root.style.setProperty(`--font-${key}`, value)
         })
@@ -45,6 +57,7 @@ export function applyTheme(theme: Theme, mode: 'light' | 'dark' = 'light') {
     // Debug log
     if (process.env.NODE_ENV === 'development') {
         console.log('[Theme] Applied theme:', theme.name, 'mode:', mode)
+        console.log('[Theme] Applied fonts:', applyFonts, theme.fonts?.sans)
         console.log('[Theme] Background color:', colors.background)
     }
 }

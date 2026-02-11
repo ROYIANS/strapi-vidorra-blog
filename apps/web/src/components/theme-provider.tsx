@@ -40,6 +40,7 @@ export function ThemeProvider({
             const loadedTheme = ThemeRegistry.getTheme(stored.themeName) || defaultTheme
             setThemeState(loadedTheme)
             setModeState(stored.mode)
+            // 应用主题配置（包括字体和颜色）
             applyTheme(loadedTheme, stored.mode)
         } else {
             // 默认总是从 light 模式开始
