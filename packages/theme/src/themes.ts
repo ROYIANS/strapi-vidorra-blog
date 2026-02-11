@@ -1,6 +1,11 @@
 import type { Theme } from './types'
 
-// 默认主题 - 继承自 hexo-theme-vidorra 的设计
+/**
+ * Vidorra 默认主题
+ * 继承自 hexo-theme-vidorra 的设计系统
+ * 主色：#699054 (Vidorra Green)
+ * 背景：#fffcf5 (Cream White)
+ */
 export const vidorraTheme: Theme = {
     name: 'vidorra-default',
     displayName: 'Vidorra',
@@ -9,45 +14,117 @@ export const vidorraTheme: Theme = {
     version: '1.0.0',
     colors: {
         light: {
-            primary: '#699054',           // 主色 - 绿色
+            // 核心色
+            primary: '#699054',           // 主色 - Vidorra Green
             primaryHover: '#84a476',      // 主色悬停
-            background: '#ffffff',         // 背景
-            foreground: '#1a1a1a',        // 文字
-            card: '#f8f9fa',              // 卡片背景
+            sideline: '#699054',          // 边框装饰色
+
+            // 背景和文字
+            background: '#fffcf5',        // 奶油白背景
+            foreground: '#212121',        // 深色文字
+
+            // 卡片
+            card: '#ffffff',              // 白色卡片
             cardForeground: '#1a1a1a',    // 卡片文字
-            popover: '#ffffff',           // 弹出层背景
-            popoverForeground: '#1a1a1a', // 弹出层文字
-            border: '#e5e7eb',            // 边框
-            input: '#f3f4f6',             // 输入框背景
-            muted: '#f3f4f6',             // 次要背景
-            mutedForeground: '#6b7280',   // 次要文字
-            accent: '#f3f4f6',            // 强调背景
-            accentForeground: '#1a1a1a',  // 强调文字
-            destructive: '#ef4444',       // 危险色
-            destructiveForeground: '#ffffff', // 危险色文字
+
+            // 弹出层
+            popover: '#ffffff',
+            popoverForeground: '#1a1a1a',
+
+            // 边框和输入
+            border: '#eee',               // 浅灰边框
+            input: '#f3f4f6',
+
+            // 次要色
+            muted: '#f3f4f6',
+            mutedForeground: '#6b7280',
+
+            // 强调色
+            accent: '#f3f4f6',
+            accentForeground: '#1a1a1a',
+
+            // 危险色
+            destructive: '#ef4444',
+            destructiveForeground: '#ffffff',
+
+            // Primary 色阶（从 old_project tailwind.config.js）
+            primary100: '#e4ebe0',
+            primary200: '#d6e1d1',
+            primary300: '#c8d7c2',
+            primary400: '#bbcdb3',
+            primary500: '#adc2a3',
+            primary600: '#a0b894',
+            primary700: '#92ae85',
+            primary800: '#84a476',
+            primary900: '#779a66',
+
+            // Dark 色阶
+            primaryDark100: '#5f834f',
+            primaryDark200: '#567647',
+            primaryDark300: '#4c693f',
+            primaryDark400: '#435c37',
+            primaryDark500: '#394f2f',
+            primaryDark600: '#304128',
+            primaryDark700: '#263420',
         },
         dark: {
-            primary: '#84a476',           // 主色 - 浅绿色 (暗黑模式下)
-            primaryHover: '#99b789',      // 主色悬停
-            background: '#0a0a0a',        // 背景 - 深黑
-            foreground: '#ededed',        // 文字 - 浅色
-            card: '#161616',              // 卡片背景
-            cardForeground: '#ededed',    // 卡片文字
-            popover: '#161616',           // 弹出层背景
-            popoverForeground: '#ededed', // 弹出层文字
-            border: '#2d2d2d',            // 边框
-            input: '#1f1f1f',             // 输入框背景
-            muted: '#1f1f1f',             // 次要背景
-            mutedForeground: '#a1a1aa',   // 次要文字
-            accent: '#1f1f1f',            // 强调背景
-            accentForeground: '#ededed',  // 强调文字
-            destructive: '#dc2626',       // 危险色
-            destructiveForeground: '#ffffff', // 危险色文字
+            // 核心色
+            primary: '#699054',           // 保持主色一致
+            primaryHover: '#84a476',
+            sideline: '#699054',
+
+            // 背景和文字
+            background: '#0a0a0a',        // 深黑背景
+            foreground: '#ededed',        // 浅色文字
+
+            // 卡片
+            card: '#161616',              // 深灰卡片
+            cardForeground: '#ededed',
+
+            // 弹出层
+            popover: '#161616',
+            popoverForeground: '#ededed',
+
+            // 边框和输入
+            border: '#262626',            // 深色边框
+            input: '#1f1f1f',
+
+            // 次要色
+            muted: '#1f1f1f',
+            mutedForeground: '#a1a1aa',
+
+            // 强调色
+            accent: '#1f1f1f',
+            accentForeground: '#ededed',
+
+            // 危险色
+            destructive: '#dc2626',
+            destructiveForeground: '#ffffff',
+
+            // Primary 色阶（暗黑模式使用相同色阶）
+            primary100: '#e4ebe0',
+            primary200: '#d6e1d1',
+            primary300: '#c8d7c2',
+            primary400: '#bbcdb3',
+            primary500: '#adc2a3',
+            primary600: '#a0b894',
+            primary700: '#92ae85',
+            primary800: '#84a476',
+            primary900: '#779a66',
+
+            // Dark 色阶
+            primaryDark100: '#5f834f',
+            primaryDark200: '#567647',
+            primaryDark300: '#4c693f',
+            primaryDark400: '#435c37',
+            primaryDark500: '#394f2f',
+            primaryDark600: '#304128',
+            primaryDark700: '#263420',
         },
     },
     fonts: {
-        sans: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
-        serif: '"Noto Serif SC", "Source Han Serif SC", serif',
+        sans: '"Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        serif: '"Noto Serif SC", "Newsreader", "Source Han Serif SC", serif',
         mono: '"JetBrains Mono", "Fira Code", Consolas, Monaco, "Courier New", monospace',
     },
 }

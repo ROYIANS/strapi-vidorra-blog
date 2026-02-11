@@ -13,10 +13,10 @@ interface SocialLink {
 
 const socialLinks: SocialLink[] = [
     { title: 'GitHub', url: 'https://github.com/ROYIANS', icon: 'ri-github-fill' },
-    { title: 'Email', url: 'mailto:admin@royians.cn', icon: 'ri-mail-fill' },
+    { title: 'Email', url: 'mailto:royians@vidorra.life', icon: 'ri-mail-fill' },
 ]
 
-const author = 'ROYIANS'
+const author = '小梦岛'
 
 export function Footer() {
     return (

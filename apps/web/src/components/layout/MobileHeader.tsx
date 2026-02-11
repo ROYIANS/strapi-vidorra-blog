@@ -23,7 +23,7 @@ const navItems: NavItem[] = [
     { title: '关于', url: '/about', icon: 'ri-information-line' },
 ]
 
-const siteTitle = 'ROYIANS'
+const siteTitle = '小梦岛'
 const subTitle = '随缘而安'
 
 export function MobileHeader() {
@@ -39,7 +39,7 @@ export function MobileHeader() {
     return (
         <>
             {/* Top Bar */}
-            <div className="md:hidden flex bg-[var(--sideline)] dark:bg-black
+            <div className="hidden max-md:flex bg-[var(--sideline)] dark:bg-black
                            w-full h-12 fixed z-[9999] left-0 -top-px
                            justify-between items-center select-none">
                 <div className="shrink grow basis-auto h-full text-left ml-3 mr-12 max-w-[50%]
@@ -66,7 +66,7 @@ export function MobileHeader() {
             {/* Mask Overlay */}
             {isOpen && (
                 <div
-                    className="md:hidden fixed z-[99999] inset-0
+                    className="hidden max-md:block fixed z-[99999] inset-0
                               bg-[var(--sideline)] dark:bg-black bg-opacity-60
                               backdrop-saturate-[1.8] backdrop-blur-[20px]
                               animate-fade-in"
@@ -76,7 +76,7 @@ export function MobileHeader() {
 
             {/* Drawer Menu */}
             <div
-                className={`md:hidden fixed top-0 overflow-y-auto overflow-x-hidden
+                className={`hidden max-md:block fixed top-0 overflow-y-auto overflow-x-hidden
                            w-72 h-full bg-white dark:bg-zinc-900 z-[999999]
                            shadow-[rgba(100,100,111,0.2)_0_7px_29px_0]
                            transition-all duration-500 text-gray-700 dark:text-gray-200

@@ -25,7 +25,7 @@ interface ThemeProviderProps {
 export function ThemeProvider({
     children,
     defaultThemeName = 'vidorra-default',
-    enableSystemTheme = true,
+    enableSystemTheme = false, // 默认关闭系统主题，总是从 light 模式开始
     storageKey = 'vidorra-theme',
 }: ThemeProviderProps) {
     const [theme, setThemeState] = useState<Theme>(defaultTheme)
@@ -42,7 +42,8 @@ export function ThemeProvider({
             setModeState(stored.mode)
             applyTheme(loadedTheme, stored.mode)
         } else {
-            const initialMode = enableSystemTheme ? getSystemThemePreference() : 'light'
+            // 默认总是从 light 模式开始
+            const initialMode = 'light'
             setModeState(initialMode)
             applyTheme(theme, initialMode)
             saveThemeToStorage(defaultThemeName, initialMode, storageKey)

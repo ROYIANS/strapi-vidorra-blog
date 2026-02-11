@@ -12,6 +12,7 @@ export function applyTheme(theme: Theme, mode: 'light' | 'dark' = 'light') {
 
     // 应用颜色变量
     Object.entries(colors).forEach(([key, value]) => {
+        if (!value) return // 跳过undefined值
         const cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase()
         root.style.setProperty(`--${cssKey}`, value)
     })
@@ -39,6 +40,12 @@ export function applyTheme(theme: Theme, mode: 'light' | 'dark' = 'light') {
             document.head.appendChild(styleEl)
         }
         styleEl.textContent = theme.customCss
+    }
+
+    // Debug log
+    if (process.env.NODE_ENV === 'development') {
+        console.log('[Theme] Applied theme:', theme.name, 'mode:', mode)
+        console.log('[Theme] Background color:', colors.background)
     }
 }
 
@@ -108,11 +115,13 @@ export function watchSystemTheme(callback: (mode: 'light' | 'dark') => void) {
 
 /**
  * 生成 TailwindCSS 主题配置
+ * 支持完整的色阶
  */
 export function generateTailwindTheme(colors: ThemeColors) {
-    return {
+    const base = {
         primary: colors.primary,
         'primary-hover': colors.primaryHover,
+        sideline: colors.sideline,
         background: colors.background,
         foreground: colors.foreground,
         card: colors.card,
@@ -128,4 +137,25 @@ export function generateTailwindTheme(colors: ThemeColors) {
         destructive: colors.destructive,
         'destructive-foreground': colors.destructiveForeground,
     }
+
+    // 添加色阶
+    const scale: Record<string, string> = {}
+    if (colors.primary100) scale['primary-100'] = colors.primary100
+    if (colors.primary200) scale['primary-200'] = colors.primary200
+    if (colors.primary300) scale['primary-300'] = colors.primary300
+    if (colors.primary400) scale['primary-400'] = colors.primary400
+    if (colors.primary500) scale['primary-500'] = colors.primary500
+    if (colors.primary600) scale['primary-600'] = colors.primary600
+    if (colors.primary700) scale['primary-700'] = colors.primary700
+    if (colors.primary800) scale['primary-800'] = colors.primary800
+    if (colors.primary900) scale['primary-900'] = colors.primary900
+    if (colors.primaryDark100) scale['primary-dark-100'] = colors.primaryDark100
+    if (colors.primaryDark200) scale['primary-dark-200'] = colors.primaryDark200
+    if (colors.primaryDark300) scale['primary-dark-300'] = colors.primaryDark300
+    if (colors.primaryDark400) scale['primary-dark-400'] = colors.primaryDark400
+    if (colors.primaryDark500) scale['primary-dark-500'] = colors.primaryDark500
+    if (colors.primaryDark600) scale['primary-dark-600'] = colors.primaryDark600
+    if (colors.primaryDark700) scale['primary-dark-700'] = colors.primaryDark700
+
+    return { ...base, ...scale }
 }

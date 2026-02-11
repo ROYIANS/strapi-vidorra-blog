@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import type { PostSummary } from '@vidorra/types'
 
@@ -12,10 +12,46 @@ interface HomePostListProps {
 
 /**
  * HomePostList - 首页文章列表
- * 包含分类筛选和文章列表展示
+ * 包含分类筛选（支持滚动）和文章列表展示
  */
 export function HomePostList({ posts, categories, totalPosts }: HomePostListProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const categoriesRef = useRef<HTMLUListElement>(null)
+  const [hasScroll, setHasScroll] = useState(false)
+  const [scrollIcon, setScrollIcon] = useState('ri-skip-right-fill')
+
+  // 检测是否需要滚动按钮
+  useEffect(() => {
+    const checkScroll = () => {
+      if (categoriesRef.current) {
+        setHasScroll(
+          categoriesRef.current.scrollWidth > categoriesRef.current.clientWidth
+        )
+      }
+    }
+    checkScroll()
+    window.addEventListener('resize', checkScroll)
+    return () => window.removeEventListener('resize', checkScroll)
+  }, [categories])
+
+  // 滚动处理
+  const handleScrollClick = () => {
+    if (!categoriesRef.current) return
+
+    if (scrollIcon === 'ri-skip-right-fill') {
+      categoriesRef.current.scrollBy({
+        left: categoriesRef.current.clientWidth,
+        behavior: 'smooth',
+      })
+      setScrollIcon('ri-skip-left-fill')
+    } else {
+      categoriesRef.current.scroll({
+        left: 0,
+        behavior: 'smooth',
+      })
+      setScrollIcon('ri-skip-right-fill')
+    }
+  }
 
   // 格式化日期为相对时间
   const formatRelativeTime = (date: string) => {
@@ -35,7 +71,11 @@ export function HomePostList({ posts, categories, totalPosts }: HomePostListProp
     <div className="w-full pb-5 select-none">
       {/* 分类筛选栏 */}
       <div className="text-sm w-full p-4 relative">
-        <ul className="grid grid-flow-col auto-cols-max rounded-sm overflow-x-auto pr-14">
+        <ul
+          ref={categoriesRef}
+          className="grid grid-flow-col auto-cols-max rounded-sm overflow-x-auto pr-14 scroll-smooth"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
           <li
             className={`px-4 py-1 m-1 cursor-pointer rounded transition-colors ${
               selectedCategory === null
@@ -60,10 +100,21 @@ export function HomePostList({ posts, categories, totalPosts }: HomePostListProp
             </li>
           ))}
         </ul>
+
+        {/* 滚动按钮 */}
+        {hasScroll && (
+          <div
+            className="h-full w-14 flex justify-center items-center bg-gradient-to-l from-80%
+                     from-white dark:from-zinc-900 absolute right-0 top-0 text-xl cursor-pointer"
+            onClick={handleScrollClick}
+          >
+            <i className={scrollIcon} />
+          </div>
+        )}
       </div>
 
       {/* 文章列表 */}
-      <div className="px-8 w-full flex flex-wrap flex-auto lg:block lg:pr-0 lg:pl-6">
+      <div className="px-8 w-full flex flex-wrap flex-auto max-lg:block max-lg:pr-0 max-lg:pl-6">
         {posts.map((post, index) => {
           const hasCoverAndDesc = post.cover && post.description
           const isLongDesc = (post.description?.length || 0) > 80
@@ -71,16 +122,16 @@ export function HomePostList({ posts, categories, totalPosts }: HomePostListProp
           return (
             <div
               key={post.id}
-              className={`basis-1/2 grow-0 shrink group cursor-pointer my-1 lg:my-8 ${
+              className={`basis-1/2 flex-grow-0 flex-shrink group cursor-pointer my-1 max-lg:my-8 ${
                 hasCoverAndDesc || isLongDesc ? 'basis-full' : ''
               }`}
             >
               {/* 有封面和描述的大卡片 */}
               {hasCoverAndDesc ? (
-                <div className="w-full h-full text-white lg:-mx-6 lg:w-auto">
+                <div className="w-full h-full text-white max-lg:-mx-6 max-lg:w-auto">
                   <div className="relative z-0 flex py-4 before:bg-black before:opacity-40 before:absolute before:-z-1 before:inset-0">
                     <div className="flex flex-col justify-center w-full">
-                      <div className="px-2 my-2 grid grid-cols-12 lg:px-0">
+                      <div className="px-2 my-2 grid grid-cols-12 max-lg:px-0">
                         <div className="col-span-12 px-5 grid relative">
                           <h1 className="text-xl font-black group-hover:underline self-start">
                             <Link href={`/posts/${post.slug}`}>
@@ -126,7 +177,7 @@ export function HomePostList({ posts, categories, totalPosts }: HomePostListProp
                 /* 普通卡片 */
                 <div className={`px-2 my-2 grid ${isLongDesc ? 'grid-cols-12 lg:!grid-cols-6' : 'grid-cols-6'} lg:px-0 group/img`}>
                   <div className="col-span-1 relative aspect-square">
-                    <div className="w-full h-full border text-zinc-700 dark:border-zinc-800 dark:text-zinc-300 overflow-hidden relative">
+                    <div className="w-full h-full border border-gray-200 text-zinc-700 dark:border-zinc-800 dark:text-zinc-300 overflow-hidden relative">
                       <div className="w-full h-full flex items-center justify-center">
                         <div>
                           <div className="text-2xl font-black text-center">
@@ -147,7 +198,7 @@ export function HomePostList({ posts, categories, totalPosts }: HomePostListProp
                       )}
                     </div>
                   </div>
-                  <div className={`px-5 grid ${isLongDesc ? 'col-span-11 lg:!col-span-5' : 'col-span-5'}`}>
+                  <div className={`px-5 grid ${isLongDesc ? 'col-span-11 max-lg:!col-span-5' : 'col-span-5'}`}>
                     <h1 className="text-xl font-black group-hover:underline self-start">
                       <Link href={`/posts/${post.slug}`}>
                         {post.title || '未命名文档'}

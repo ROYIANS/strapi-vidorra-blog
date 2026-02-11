@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Noto_Sans_SC, Noto_Serif_SC, Oswald } from 'next/font/google'
+import { Noto_Sans_SC, Noto_Serif_SC, Oswald, Newsreader, JetBrains_Mono } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme-provider'
 import { BorderFrame, Sidebar, MobileHeader, Footer } from '@/components/layout'
 import { BackgroundDecoration } from '@/components/layout'
@@ -26,11 +26,25 @@ const oswald = Oswald({
   weight: ['300', '400', '500', '600', '700'],
 })
 
+const newsreader = Newsreader({
+  subsets: ['latin'],
+  variable: '--font-serif-en',
+  display: 'swap',
+  weight: ['300', '400', '500', '600', '700'],
+})
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+  display: 'swap',
+  weight: ['300', '400', '500', '600', '700'],
+})
+
 export const metadata: Metadata = {
-  title: 'ROYIANS | Vidorra Blog',
+  title: '小梦岛 | Vidorra Blog',
   description: '随缘而安 — 一款对标 Medium 的现代化博客系统',
-  keywords: ['博客', 'ROYIANS', 'Next.js', '前端', '技术分享'],
-  authors: [{ name: 'ROYIANS', url: 'https://www.royians.cn' }],
+  keywords: ['博客', '小梦岛', 'Next.js', '前端', '技术分享'],
+  authors: [{ name: '小梦岛', url: 'https://www.royians.cn' }],
 }
 
 export default function RootLayout({
@@ -40,7 +54,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN" suppressHydrationWarning>
-      <body className={`${notoSansSC.variable} ${notoSerifSC.variable} ${oswald.variable} antialiased heti--sans`}>
+      <body className={`${notoSansSC.variable} ${notoSerifSC.variable} ${oswald.variable} ${newsreader.variable} ${jetbrainsMono.variable} antialiased heti--sans`}>
         <ThemeProvider>
           {/* 绿色边框装饰 */}
           <BorderFrame />
