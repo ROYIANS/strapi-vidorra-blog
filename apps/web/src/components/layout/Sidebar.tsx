@@ -19,17 +19,18 @@ interface NavItem {
 
 const navItems: NavItem[] = [
     { title: '首页', url: '/', icon: 'ri-home-4-line' },
-    { title: '文章', url: '/posts', icon: 'ri-article-line' },
+    { title: '归档', url: '/archives', icon: 'ri-archive-line' },
+    { title: '分类', url: '/categories', icon: 'ri-folder-2-line' },
+    { title: '标签', url: '/tags', icon: 'ri-price-tag-3-line' },
     { title: '友链', url: '/friends', icon: 'ri-links-line' },
     { title: '关于', url: '/about', icon: 'ri-information-line' },
+    { group: true, name: '生活' },
     { title: '说说', url: '/moments', icon: 'ri-chat-3-line' },
-    { title: '摄影', url: '/photos', icon: 'ri-camera-line' },
-    { title: '分类', url: '/categories', icon: 'ri-folder-line' },
-    { title: '标签', url: '/tags', icon: 'ri-price-tag-3-line' },
+    { title: '摄影', url: '/photos', icon: 'ri-camera-3-line' },
     { group: true, name: '娱乐' },
-    { title: '书单', url: '/books', icon: 'ri-book-line' },
-    { title: '影集', url: '/movies', icon: 'ri-movie-line' },
-    { title: '歌单', url: '/music', icon: 'ri-music-line' },
+    { title: '书单', url: '/books', icon: 'ri-book-2-line' },
+    { title: '影集', url: '/movies', icon: 'ri-movie-2-line' },
+    { title: '歌单', url: '/music', icon: 'ri-music-2-line' },
 ]
 
 const siteTitle = '小梦岛'
@@ -115,7 +116,7 @@ export function Sidebar() {
                             <button className="w-full px-4 py-2 bg-[var(--sideline)] text-white rounded
                                              hover:opacity-90 transition-opacity
                                              dark:bg-[var(--sideline)] flex items-center justify-center gap-2">
-                                <i className="ri-user-add-line" />
+                                <i className="ri-login-box-line" />
                                 <span>登录 / 注册</span>
                             </button>
                         </div>

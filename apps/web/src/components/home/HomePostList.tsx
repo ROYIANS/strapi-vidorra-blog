@@ -116,29 +116,35 @@ export function HomePostList({ posts, categories, totalPosts }: HomePostListProp
       {/* 文章列表 */}
       <div className="px-8 w-full flex flex-wrap flex-auto max-lg:block max-lg:pr-0 max-lg:pl-6">
         {posts.map((post, index) => {
-          const hasCoverAndDesc = post.cover && post.description
+          // 使用 displayMode 明确控制展示模式
+          const isLargeMode = post.displayMode === 'large' && post.cover
           const isLongDesc = (post.description?.length || 0) > 80
 
           return (
             <div
               key={post.id}
               className={`basis-1/2 flex-grow-0 flex-shrink group cursor-pointer my-1 max-lg:my-8 ${
-                hasCoverAndDesc || isLongDesc ? 'basis-full' : ''
+                isLargeMode || isLongDesc ? 'basis-full' : ''
               }`}
             >
-              {/* 有封面和描述的大卡片 */}
-              {hasCoverAndDesc ? (
+              {/* 大图模式（必须有 displayMode='large' 和 cover） */}
+              {isLargeMode ? (
                 <div className="w-full h-full text-white max-lg:-mx-6 max-lg:w-auto">
                   <div className="relative z-0 flex py-4 before:bg-black before:opacity-40 before:absolute before:-z-1 before:inset-0">
                     <div className="flex flex-col justify-center w-full">
                       <div className="px-2 my-2 grid grid-cols-12 max-lg:px-0">
                         <div className="col-span-12 px-5 grid relative">
+                          {post.recommend && (
+                            <div className="absolute w-6 h-6 top-0 -left-6 flex items-center justify-center">
+                              <i className="ri-sparkling-2-fill text-orange-500 dark:text-orange-900"></i>
+                            </div>
+                          )}
                           <h1 className="text-xl font-black group-hover:underline self-start">
                             <Link href={`/posts/${post.slug}`}>
                               {post.title || '未命名文档'}
                             </Link>
                           </h1>
-                          <div className="text-sm py-2">{post.description}</div>
+                          <div className="text-sm py-2 line-clamp-3">{post.description}</div>
                           <div className="text-xs text-zinc-300 self-end">
                             <span className="text-[var(--primary)]">
                               {formatRelativeTime(post.date)}
@@ -168,7 +174,7 @@ export function HomePostList({ posts, categories, totalPosts }: HomePostListProp
                       <img
                         alt={post.title || '未命名文档'}
                         src={post.cover}
-                        className="object-cover object-center max-w-none w-full h-full overflow-hidden pointer-events-none blur-sm"
+                        className="object-cover object-center max-w-none fixed top-0 h-full overflow-hidden pointer-events-none blur-sm"
                       />
                     </div>
                   </div>
@@ -177,6 +183,11 @@ export function HomePostList({ posts, categories, totalPosts }: HomePostListProp
                 /* 普通卡片 */
                 <div className={`px-2 my-2 grid ${isLongDesc ? 'grid-cols-12 lg:!grid-cols-6' : 'grid-cols-6'} lg:px-0 group/img`}>
                   <div className="col-span-1 relative aspect-square">
+                    {post.recommend && (
+                      <div className="absolute w-6 h-6 top-0 -left-6 flex items-center justify-center">
+                        <i className="ri-sparkling-2-fill text-orange-500 dark:text-orange-900"></i>
+                      </div>
+                    )}
                     <div className="w-full h-full border border-gray-200 text-zinc-700 dark:border-zinc-800 dark:text-zinc-300 overflow-hidden relative">
                       <div className="w-full h-full flex items-center justify-center">
                         <div>
@@ -205,7 +216,7 @@ export function HomePostList({ posts, categories, totalPosts }: HomePostListProp
                       </Link>
                     </h1>
                     {post.description && (
-                      <div className="text-sm py-2">{post.description}</div>
+                      <div className="text-sm py-2 line-clamp-2">{post.description}</div>
                     )}
                     <div className="text-xs text-zinc-600 dark:text-zinc-400 self-end">
                       <span className="text-[var(--primary)]">

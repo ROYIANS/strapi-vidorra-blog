@@ -184,6 +184,7 @@ body {
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
+  display: none; /* 默认隐藏 */
 }
 
 ::-webkit-scrollbar-thumb {
@@ -193,48 +194,45 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background-color: #84a476;
+  display: block;
+  opacity: 1;
 }
 
 ::-webkit-scrollbar-track {
   background-color: var(--sideline);
 }
 
+/* 侧边栏完全隐藏滚动条 */
 .sidebar-scrollbar::-webkit-scrollbar {
   display: none;
 }
 
-/* Hover显示滚动条的样式 */
-.hover-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
-  transition: scrollbar-color 0.3s ease;
+.sidebar-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
-.hover-scrollbar:hover {
-  scrollbar-color: #adc2a3 transparent;
-}
+/* ═══════════════════════════════════════════════════
+   Radix UI ScrollArea 渐变遮罩效果
+   ═══════════════════════════════════════════════════ */
 
-.hover-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-.hover-scrollbar::-webkit-scrollbar-thumb {
-  background-color: transparent;
-  border-radius: 4px;
-  transition: background-color 0.3s ease;
-}
-
-.hover-scrollbar:hover::-webkit-scrollbar-thumb {
-  background-color: #adc2a3;
-}
-
-.hover-scrollbar:hover::-webkit-scrollbar-thumb:hover {
-  background-color: #84a476;
-}
-
-.hover-scrollbar::-webkit-scrollbar-track {
-  background-color: transparent;
+/* ScrollArea 容器添加渐变遮罩 */
+[data-radix-scroll-area-viewport] {
+  /* 上下渐变遮罩 */
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 32px,
+    black calc(100% - 32px),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 32px,
+    black calc(100% - 32px),
+    transparent 100%
+  );
 }
 
 /* ═══════════════════════════════════════════════════
@@ -747,4 +745,72 @@ body {
 
 .font-display {
   font-family: var(--font-display);
+}
+/* ═══════════════════════════════════════════════════
+   Mood Calendar Animations
+   ═══════════════════════════════════════════════════ */
+
+/* 心情滚动动画 */
+.animate-scroll-mood {
+  --initial: 0;
+  --final: -20%;
+  --initial-2: 30%;
+  --final-2: 50%;
+}
+
+.animate-scroll-mood li:nth-child(odd) div {
+  transform: translate3d(var(--initial), 0, 0);
+  animation: mood-slide 5s linear infinite;
+}
+
+.animate-scroll-mood li:nth-child(even) div {
+  transform: translate3d(var(--initial-2), 0, 0);
+  animation: mood-slide-2 5s linear infinite;
+  left: -100%;
+}
+
+@keyframes mood-slide {
+  0% {
+    transform: translate3d(var(--initial), 0, 0);
+  }
+  100% {
+    transform: translate3d(var(--final), 0, 0);
+  }
+}
+
+@keyframes mood-slide-2 {
+  0% {
+    transform: translate3d(var(--initial-2), 0, 0);
+  }
+  100% {
+    transform: translate3d(var(--final-2), 0, 0);
+  }
+}
+
+/* Y轴旋转动画 (hover效果) */
+@keyframes spin-y {
+  0% {
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform: rotateY(360deg);
+  }
+}
+
+.hover\:animate-spin-y:hover {
+  animation: spin-y 1.5s ease-in-out;
+}
+
+/* 淡出动画 */
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.hover\:animate-fade-out:hover {
+  animation: fade-out 0.3s ease-in-out;
 }

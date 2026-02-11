@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
+import moodsConfig from '@/lib/moods'
 
 /**
  * MoodCalendar - 心情日历组件
@@ -9,16 +11,6 @@ import { useState, useEffect } from 'react'
 
 // 星期标签
 const weeks = ['日', '一', '二', '三', '四', '五', '六']
-
-// 心情emoji映射（简化版，后续可扩展）
-const moodEmojis: Record<string, string> = {
-  happy: '😊',
-  star: '⭐',
-  sad: '😢',
-  excited: '🎉',
-  calm: '😌',
-  tired: '😴',
-}
 
 // 模拟心情数据类型
 interface MoodData {
@@ -31,8 +23,8 @@ interface MoodData {
 const mockMoodData: MoodData[] = [
   { date: '2026-02-01', mood: 'happy', description: '开心的一天' },
   { date: '2026-02-05', mood: 'star', description: '闪亮的一天' },
-  { date: '2026-02-11', mood: 'excited', description: '激动的一天' },
-  { date: '2026-02-14', mood: 'calm', description: '平静的一天' },
+  { date: '2026-02-11', mood: 'heart', description: '充满爱的一天' },
+  { date: '2026-02-14', mood: 'love', description: '情人节快乐' },
 ]
 
 export function MoodCalendar({ className }: { className?: string }) {
@@ -112,24 +104,24 @@ export function MoodCalendar({ className }: { className?: string }) {
       </div>
 
       {/* 导航按钮 */}
-      <div className="font-bold text-xl justify-self-end flex gap-1">
+      <div className="font-bold text-xl justify-self-end flex gap-0">
         <button
           onClick={handlePrevMonth}
-          className="w-6 h-6 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-zinc-800 rounded"
+          className="w-6 h-6 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-zinc-800 rounded transition-colors"
           title="上个月"
         >
           <i className="ri-arrow-left-s-line" />
         </button>
         <button
           onClick={handleCurrentMonth}
-          className="w-6 h-6 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-zinc-800 rounded"
+          className="w-6 h-6 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-zinc-800 rounded transition-colors"
           title="回到当前月"
         >
           <i className="ri-loader-3-line" />
         </button>
         <button
           onClick={handleNextMonth}
-          className="w-6 h-6 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-zinc-800 rounded"
+          className="w-6 h-6 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-zinc-800 rounded transition-colors"
           title="下个月"
         >
           <i className="ri-arrow-right-s-line" />
@@ -168,13 +160,13 @@ export function MoodCalendar({ className }: { className?: string }) {
                   title={mood?.description || `${displayMonth}/${dayNumber}`}
                 >
                   {mood && (
-                    <span
-                      className="absolute inset-0 flex items-center justify-center text-base hover:scale-125 transition-transform"
-                      role="img"
-                      aria-label={mood.mood}
-                    >
-                      {moodEmojis[mood.mood] || '⭐'}
-                    </span>
+                    <Image
+                      src={moodsConfig[mood.mood] || moodsConfig.star}
+                      alt={mood.description || mood.mood}
+                      width={24}
+                      height={24}
+                      className="w-full h-full rounded-full absolute inset-0 hover:animate-fade-out object-cover object-center"
+                    />
                   )}
                   <span className={mood ? 'opacity-0' : ''}>{dayNumber}</span>
                   {isToday && (

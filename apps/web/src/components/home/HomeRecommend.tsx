@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import type { PostSummary } from '@vidorra/types'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 interface HomeRecommendProps {
   posts: PostSummary[]
@@ -80,73 +81,9 @@ export function HomeRecommend({ posts, announcement }: HomeRecommendProps) {
       )}
 
       {/* 推荐区域：3列网格布局，大屏变block */}
-      <div className="grid grid-cols-3 grid-flow-row-dense max-lg:block gap-4 overflow-hidden h-96 max-lg:h-auto">
-        {/* 推荐列表 - order-1，占1列，在左边 */}
-        <section className="order-1 col-span-1 overflow-auto hover-scrollbar max-xl:pt-4 pb-16 relative">
-          {/* Recommend 标题 */}
-          <div className="w-max h-8 p-2 mb-4">
-            <div className="w-full h-full z-0 relative after:w-full after:h-1/2
-                          after:bg-[#c8d7c2] dark:after:bg-[#304128]
-                          after:absolute after:top-2/3 after:-right-1/3 after:-z-1">
-              Recommend.
-            </div>
-          </div>
-
-          {/* 推荐文章列表 */}
-          {recommendList.map((post, index) => (
-            <div
-              key={post.id}
-              className={`w-full px-4 grid grid-cols-3 group ${
-                index === 0 ? '' : 'border-t dark:border-t-zinc-800'
-              }`}
-            >
-              {/* 文字区域 */}
-              <div
-                className={`overflow-hidden py-2 ${
-                  post.cover ? 'col-span-2' : 'col-span-3'
-                }`}
-              >
-                {/* 标题 */}
-                <div className="font-bold text-2xl cursor-pointer hover:underline self-start">
-                  <Link href={`/posts/${post.slug}`}>
-                    {post.title || '未命名文档'}
-                  </Link>
-                </div>
-
-                {/* 描述 */}
-                {post.description && (
-                  <div className="font-serif text-sm py-2 flex line-clamp-4">
-                    {post.description}
-                  </div>
-                )}
-
-                {/* 元信息 */}
-                <div className="flex justify-start items-center self-end text-xs">
-                  <span title={new Date(post.date).toLocaleString()}>
-                    {new Date(post.date).toLocaleDateString('zh-CN')}
-                  </span>
-                  <span className="mx-1 w-1 h-1 bg-gray-400 inline-block rounded-full" />
-                  <span>{post.author}</span>
-                </div>
-              </div>
-
-              {/* 封面图 */}
-              {post.cover && (
-                <div className="overflow-hidden my-2 ml-2 cursor-pointer">
-                  <img
-                    alt={post.title}
-                    src={post.cover}
-                    className="w-full h-full object-cover grayscale group-hover:filter-none
-                             group-hover:scale-125 transition-all duration-1000"
-                  />
-                </div>
-              )}
-            </div>
-          ))}
-        </section>
-
-        {/* 轮播区域 - order-2，占2列，在右边 */}
-        <section className="order-2 col-span-2 overflow-hidden border-black border-2 dark:border-[#567647] h-full">
+      <div className="grid grid-cols-3 grid-flow-row-dense max-lg:block gap-4 overflow-hidden h-max max-lg:h-auto">
+        {/* 轮播区域 - order-2，占2列，在DOM中先写但在桌面端显示在右边，移动端显示在上方 */}
+        <section className="order-2 col-span-2 overflow-hidden border-black border-2 dark:border-[#567647] h-full relative">
           <div className="w-full h-full relative group">
             {/* 轮播图片 */}
             <img
@@ -182,44 +119,116 @@ export function HomeRecommend({ posts, announcement }: HomeRecommendProps) {
             </div>
           </div>
 
-          {/* 轮播控制按钮 */}
+          {/* 轮播控制按钮 - 在轮播图内部 */}
           {carouselPosts.length > 1 && (
-            <>
-              <div className="flex absolute bottom-0 right-0 z-10">
-                <button
-                  type="button"
-                  className="inline-flex items-center justify-center w-8 h-8 text-white bg-black
-                           dark:bg-[var(--primary)] transition-all cursor-pointer hover:opacity-80"
-                  onClick={handlePrev}
-                >
-                  <i className="ri-arrow-left-line" />
-                </button>
-                <button
-                  type="button"
-                  className="inline-flex items-center justify-center w-8 h-8 text-white bg-black
-                           dark:bg-[var(--primary)] transition-all cursor-pointer hover:opacity-80"
-                  onClick={handleNext}
-                >
-                  <i className="ri-arrow-right-line" />
-                </button>
-              </div>
-
-              {/* 轮播指示器（自定义样式） */}
-              <ul className="custom-dots flex absolute top-5 right-5 z-10 gap-1">
-                {carouselPosts.map((_, index) => (
-                  <li
-                    key={index}
-                    className={`h-1 rounded cursor-pointer transition-all duration-300 ${
-                      currentIndex === index
-                        ? 'w-10 bg-white'
-                        : 'w-3 bg-white/40'
-                    }`}
-                    onClick={() => setCurrentIndex(index)}
-                  />
-                ))}
-              </ul>
-            </>
+            <div className="flex absolute bottom-0 right-0 z-10">
+              <button
+                type="button"
+                className="inline-flex items-center justify-center w-8 h-8 text-white bg-black
+                         dark:bg-[var(--primary)] transition-all cursor-pointer hover:opacity-80"
+                onClick={handlePrev}
+              >
+                <i className="ri-arrow-left-line" />
+              </button>
+              <button
+                type="button"
+                className="inline-flex items-center justify-center w-8 h-8 text-white bg-black
+                         dark:bg-[var(--primary)] transition-all cursor-pointer hover:opacity-80"
+                onClick={handleNext}
+              >
+                <i className="ri-arrow-right-line" />
+              </button>
+            </div>
           )}
+
+          {/* 轮播指示器（自定义样式） */}
+          {carouselPosts.length > 1 && (
+            <ul className="custom-dots flex absolute top-5 right-5 z-10 gap-1">
+              {carouselPosts.map((_, index) => (
+                <li
+                  key={index}
+                  className={`h-1 rounded cursor-pointer transition-all duration-300 ${
+                    currentIndex === index
+                      ? 'w-10 bg-white'
+                      : 'w-3 bg-white/40'
+                  }`}
+                  onClick={() => setCurrentIndex(index)}
+                />
+              ))}
+            </ul>
+          )}
+        </section>
+
+        {/* 推荐列表 - order-1，占1列，在DOM中后写但在桌面端显示在左边，移动端显示在下方 */}
+        <section className="order-1 col-span-1 relative max-xl:pt-4 pb-16">
+          {/* Recommend 标题 - 固定不滚动 */}
+          <div className="w-max h-8 p-2 mb-4">
+            <div className="w-full h-full z-0 relative after:w-full after:h-1/2
+                          after:bg-[#c8d7c2] dark:after:bg-[#304128]
+                          after:absolute after:top-2/3 after:-right-1/3 after:-z-1">
+              Recommend.
+            </div>
+          </div>
+
+          {/* 推荐文章列表 - 使用 ScrollArea 组件 */}
+          <ScrollArea className="h-[calc(100%-5rem)]">
+            {recommendList.map((post, index) => (
+              <div
+                key={post.id}
+                className={`w-full px-4 grid grid-cols-3 group ${
+                  index === 0 ? '' : 'border-t border-gray-200 dark:border-t-zinc-800'
+                }`}
+              >
+                {/* 文字区域 */}
+                <div
+                  className={`overflow-hidden py-2 ${
+                    post.cover ? 'col-span-2' : 'col-span-3'
+                  }`}
+                >
+                  {/* 标题 */}
+                  <div className="font-bold text-2xl cursor-pointer hover:underline self-start">
+                    <Link href={`/posts/${post.slug}`}>
+                      {post.title || '未命名文档'}
+                    </Link>
+                  </div>
+
+                  {/* 元信息 */}
+                  <div className="flex justify-start items-center self-end text-xs mt-2">
+                    <span title={new Date(post.date).toLocaleString()}>
+                      {new Date(post.date).toLocaleDateString('zh-CN')}
+                    </span>
+                    <span className="mx-1 w-1 h-1 bg-gray-400 inline-block rounded-full" />
+                    <span>{post.author}</span>
+                  </div>
+                </div>
+
+                {/* 封面图 - 1:1 正方形 */}
+                {post.cover && (
+                  <div className="overflow-hidden my-2 ml-2 cursor-pointer aspect-square">
+                    <img
+                      alt={post.title}
+                      src={post.cover}
+                      className="w-full h-full object-cover grayscale group-hover:filter-none
+                               group-hover:scale-125 transition-all duration-1000"
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
+          </ScrollArea>
+
+          {/* 更多推荐按钮 - 固定在底部 */}
+          <div className="absolute w-full bottom-0 left-0 bg-white dark:bg-zinc-900 z-10">
+            <Link
+              href="/posts"
+              className="bg-black dark:bg-[var(--sideline)] text-base text-white
+                       dark:text-zinc-900 w-max px-5 py-1 ml-2 my-2 cursor-pointer rounded
+                       inline-flex items-center gap-2 hover:opacity-80 transition-opacity"
+            >
+              <span>更多推荐</span>
+              <i className="ri-arrow-right-line" />
+            </Link>
+          </div>
         </section>
       </div>
     </div>

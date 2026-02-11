@@ -14,6 +14,8 @@ export interface Post {
     tags?: string[]
     readTime?: number
     wordCount?: number
+    recommend?: boolean
+    displayMode?: 'large' | 'normal' // 展示模式：large=大图模式（需要cover），normal=普通小图模式
 }
 
 // 文章列表项（不包含完整内容）
