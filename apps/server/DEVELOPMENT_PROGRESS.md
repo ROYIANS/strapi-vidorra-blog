@@ -313,7 +313,7 @@ npx prisma studio
 ```env
 NODE_ENV=development
 PORT=3001
-DATABASE_URL="postgresql://blog:PFBX3sbkdQsp8Gep@43.153.151.145:5432/blog?schema=public"
+DATABASE_URL=""
 JWT_SECRET=your-super-secret-jwt-key
 JWT_EXPIRES_IN=7d
 CORS_ORIGIN=http://localhost:3000,http://localhost:5173
