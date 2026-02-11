@@ -22,7 +22,8 @@
     "lint": "pnpm --recursive lint",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "clean": "pnpm --recursive exec rm -rf node_modules .turbo dist .next build",
-    "typecheck": "pnpm --recursive typecheck"
+    "typecheck": "pnpm --recursive typecheck",
+    "migrate:strapi": "npx tsx scripts/migrate-to-strapi.ts"
   },
   "devDependencies": {
     "@types/node": "catalog:",
