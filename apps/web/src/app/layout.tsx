@@ -66,10 +66,15 @@ export default function RootLayout({
           <MobileHeader />
 
           {/* 主内容区域 */}
-          <main className="relative min-h-[var(--content-min-h)]
-                                    ml-[var(--side-width)] max-md:ml-0 max-md:mt-12
-                                    bg-[var(--background)] dark:bg-zinc-900"
-            style={{ boxShadow: 'rgba(0, 0, 0, 0.05) 0 1px 2px 0' }}
+          <main
+            className="relative min-h-[var(--content-min-h)]
+                       max-md:ml-0 max-md:mt-12
+                       bg-[var(--background)] dark:bg-zinc-900
+                       md:pr-0 md:pl-0 md:pt-0 md:block p-2 [&:has(.main-content)]:p-0"
+            style={{
+              boxShadow: 'rgba(0, 0, 0, 0.05) 0 1px 2px 0',
+              marginLeft: 'calc(var(--side-width) + var(--mask-width) - 0.7rem)'
+            }}
           >
             <BackgroundDecoration />
             <div className="relative z-10">

@@ -44,7 +44,9 @@ export function Sidebar() {
             {/* Desktop Sidebar */}
             <header className="max-md:hidden fixed pt-2 pb-16 px-[var(--h-margin)] h-full w-[var(--side-width)]
                                bg-white dark:bg-zinc-950 text-gray-700 dark:text-gray-200 text-sm select-none
-                               overflow-auto z-50 sidebar-scrollbar left-0 top-0">
+                               overflow-auto z-50 sidebar-scrollbar top-0"
+                style={{ left: 'var(--mask-width)' }}
+            >
                 <div className="animate-left-in">
                     {/* Logo / Title */}
                     <div className="w-full mx-0 my-8">
@@ -123,7 +125,9 @@ export function Sidebar() {
 
             {/* Desktop Bottom Action Bar */}
             <nav className="max-md:hidden bg-white bg-curve-pattern dark:bg-zinc-950 text-gray-700 dark:text-gray-200 -bottom-px select-none
-                           fixed bottom-0 left-0 my-[var(--mask-width)] p-2 h-16 w-[var(--side-width)] z-50">
+                           fixed bottom-0 my-[var(--mask-width)] p-2 h-16 w-[var(--side-width)] z-50"
+                style={{ left: 'var(--mask-width)' }}
+            >
                 <ul className="w-full h-full flex gap-4 items-center justify-center">
                     <li className="blog-button-sm" title="搜索">
                         <i className="ri-search-2-line" />
