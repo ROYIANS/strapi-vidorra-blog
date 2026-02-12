@@ -1,8 +1,8 @@
-{
-  "name": "strapi-vidorra-blog",
+﻿{
+  "name": "vidorra-blog",
   "version": "0.0.1",
   "private": true,
-  "description": "Modern blog system built with Next.js + Strapi CMS",
+  "description": "Modern blog system built with Next.js + NestJS API",
   "author": {
     "name": "ROYIANS",
     "email": "royians@vidorra.life",
@@ -13,17 +13,16 @@
     "dev": "pnpm --parallel --filter \"./apps/*\" dev",
     "dev:web": "pnpm --filter web dev",
     "dev:admin": "pnpm --filter admin dev",
-    "dev:strapi": "pnpm --filter strapi develop",
+    "dev:server": "pnpm --filter server dev",
     "build": "pnpm --recursive --filter \"./apps/*\" build",
     "build:web": "pnpm --filter web build",
     "build:admin": "pnpm --filter admin build",
-    "build:strapi": "pnpm --filter strapi build",
+    "build:server": "pnpm --filter server build",
     "start": "pnpm --parallel --filter \"./apps/*\" start",
     "lint": "pnpm --recursive lint",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "clean": "pnpm --recursive exec rm -rf node_modules .turbo dist .next build",
-    "typecheck": "pnpm --recursive typecheck",
-    "migrate:strapi": "npx tsx scripts/migrate-to-strapi.ts"
+    "typecheck": "pnpm --recursive typecheck"
   },
   "devDependencies": {
     "@types/node": "catalog:",

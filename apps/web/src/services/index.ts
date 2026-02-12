@@ -1,5 +1,5 @@
-export { apiClient, ApiError } from './api-client'
-export type { StrapiResponse } from './api-client'
+﻿export { apiClient, ApiError } from './api-client'
+export type { ApiResponse } from './api-client'
 
 export {
     fetchPosts,
@@ -9,3 +9,4 @@ export {
     fetchRecommendedPosts,
     fetchStickyPosts,
 } from './posts'
+

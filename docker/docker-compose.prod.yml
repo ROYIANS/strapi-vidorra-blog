@@ -1,6 +1,4 @@
-version: '3.8'
-
-# 生产环境配置覆盖
+﻿version: '3.8'
 
 services:
   postgres:
@@ -15,11 +13,9 @@ services:
           cpus: '1'
           memory: 1G
 
-  strapi:
+  server:
     environment:
       NODE_ENV: production
-    build:
-      target: production
     deploy:
       resources:
         limits:
@@ -28,9 +24,6 @@ services:
         reservations:
           cpus: '1'
           memory: 1G
-    # 移除代码挂载
-    volumes:
-      - strapi_uploads:/opt/app/public/uploads
 
   web:
     environment:
