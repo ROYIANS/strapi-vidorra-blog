@@ -23,8 +23,8 @@ const userSchema = z.object({
   bio: z.string().nullable(),
   role: userRoleSchema,
   isActive: z.boolean(),
-  createdAt: z.coerce.date(),
-  updatedAt: z.coerce.date(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
 })
 export type User = z.infer<typeof userSchema>
 

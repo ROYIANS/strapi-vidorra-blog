@@ -5,7 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { LongText } from '@/components/long-text'
 import { callTypes, roles } from '../data/data'
-import { type User } from '../data/schema'
+import { type User, type UserStatus } from '../data/schema'
 import { DataTableRowActions } from './data-table-row-actions'
 
 export const usersColumns: ColumnDef<User>[] = [
@@ -58,9 +58,7 @@ export const usersColumns: ColumnDef<User>[] = [
       <DataTableColumnHeader column={column} title='Name' />
     ),
     cell: ({ row }) => {
-      const { firstName, lastName } = row.original
-      const fullName = `${firstName} ${lastName}`
-      return <LongText className='max-w-36'>{fullName}</LongText>
+      return <LongText className='max-w-36'>{row.original.name ?? 'N/A'}</LongText>
     },
     meta: { className: 'w-36' },
   },
@@ -74,25 +72,18 @@ export const usersColumns: ColumnDef<User>[] = [
     ),
   },
   {
-    accessorKey: 'phoneNumber',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Phone Number' />
-    ),
-    cell: ({ row }) => <div>{row.getValue('phoneNumber')}</div>,
-    enableSorting: false,
-  },
-  {
-    accessorKey: 'status',
+    id: 'status',
+    accessorFn: (row) => (row.isActive ? 'active' : 'inactive'),
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Status' />
     ),
     cell: ({ row }) => {
-      const { status } = row.original
+      const status = row.getValue('status') as UserStatus
       const badgeColor = callTypes.get(status)
       return (
         <div className='flex space-x-2'>
           <Badge variant='outline' className={cn('capitalize', badgeColor)}>
-            {row.getValue('status')}
+            {status}
           </Badge>
         </div>
       )

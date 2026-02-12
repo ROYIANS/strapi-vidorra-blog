@@ -124,8 +124,6 @@ export function UsersTable({
             options: [
               { label: 'Active', value: 'active' },
               { label: 'Inactive', value: 'inactive' },
-              { label: 'Invited', value: 'invited' },
-              { label: 'Suspended', value: 'suspended' },
             ],
           },
           {
