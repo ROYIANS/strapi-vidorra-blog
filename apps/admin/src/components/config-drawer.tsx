@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils'
 import { useDirection } from '@/context/direction-provider'
 import { type Collapsible, useLayout } from '@/context/layout-provider'
 import { useTheme } from '@/context/theme-provider'
+import { useThemeColor } from '@/context/theme-color-provider'
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
@@ -31,12 +32,14 @@ export function ConfigDrawer() {
   const { setOpen } = useSidebar()
   const { resetDir } = useDirection()
   const { resetTheme } = useTheme()
+  const { resetThemeColor } = useThemeColor()
   const { resetLayout } = useLayout()
 
   const handleReset = () => {
     setOpen(true)
     resetDir()
     resetTheme()
+    resetThemeColor()
     resetLayout()
   }
 

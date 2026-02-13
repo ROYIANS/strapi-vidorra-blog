@@ -1,5 +1,7 @@
 import {
+  Info,
   LayoutDashboard,
+  Settings,
   Users,
   Command,
 } from 'lucide-react'
@@ -30,6 +32,21 @@ export const sidebarData: SidebarData = {
           url: '/users',
           icon: Users,
           permissions: [PERMISSIONS.USERS_VIEW],
+        },
+      ],
+    },
+    {
+      title: t('nav.systemGroup'),
+      items: [
+        {
+          title: t('nav.settingsMenu'),
+          url: '/settings/account',
+          icon: Settings,
+        },
+        {
+          title: t('nav.aboutMenu'),
+          url: '/settings/about',
+          icon: Info,
         },
       ],
     },

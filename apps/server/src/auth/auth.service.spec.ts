@@ -46,16 +46,17 @@ describe('AuthService', () => {
         email: 'old@example.com',
         username: 'old_name',
         name: 'Old Name',
+        bio: 'Existing bio',
         role: 'ADMIN',
         avatar: null,
       })
-      .mockResolvedValueOnce(null);
     prisma.user.update.mockResolvedValue({
       id: 'db-id-1',
       clerkId: 'user_abc',
       email: 'admin@example.com',
       username: 'admin',
-      name: 'Admin',
+      name: 'Old Name',
+      bio: 'Existing bio',
       role: 'ADMIN',
       avatar: 'https://example.com/a.png',
     });
@@ -73,7 +74,7 @@ describe('AuthService', () => {
       data: {
         email: 'admin@example.com',
         username: 'admin',
-        name: 'Admin',
+        name: 'Old Name',
         avatar: 'https://example.com/a.png',
       },
       select: {
@@ -82,6 +83,7 @@ describe('AuthService', () => {
         email: true,
         username: true,
         name: true,
+        bio: true,
         role: true,
         avatar: true,
       },
@@ -91,7 +93,8 @@ describe('AuthService', () => {
       clerkId: 'user_abc',
       email: 'admin@example.com',
       username: 'admin',
-      name: 'Admin',
+      name: 'Old Name',
+      bio: 'Existing bio',
       role: 'ADMIN',
       avatar: 'https://example.com/a.png',
     });
@@ -107,6 +110,7 @@ describe('AuthService', () => {
       email: 'legacy@example.com',
       username: 'legacy',
       name: 'Legacy User',
+      bio: null,
       role: 'EDITOR',
       avatar: null,
     });
@@ -132,6 +136,7 @@ describe('AuthService', () => {
         email: true,
         username: true,
         name: true,
+        bio: true,
         role: true,
         avatar: true,
       },
@@ -142,6 +147,7 @@ describe('AuthService', () => {
       email: 'legacy@example.com',
       username: 'legacy',
       name: 'Legacy User',
+      bio: null,
       role: 'EDITOR',
       avatar: null,
     });
@@ -156,6 +162,7 @@ describe('AuthService', () => {
       email: 'first@example.com',
       username: 'first_user',
       name: 'first_user',
+      bio: null,
       role: 'ADMIN',
       avatar: null,
     });
@@ -179,6 +186,7 @@ describe('AuthService', () => {
         email: true,
         username: true,
         name: true,
+        bio: true,
         role: true,
         avatar: true,
       },
@@ -190,6 +198,7 @@ describe('AuthService', () => {
       email: 'first@example.com',
       username: 'first_user',
       name: 'first_user',
+      bio: null,
       role: 'ADMIN',
       avatar: null,
     });
@@ -204,6 +213,7 @@ describe('AuthService', () => {
       email: 'user_missing_claims@clerk.local',
       username: 'clerk_user_missing_claims',
       name: 'clerk_user_missing_claims',
+      bio: null,
       role: 'READER',
       avatar: null,
     });
@@ -225,6 +235,7 @@ describe('AuthService', () => {
         email: true,
         username: true,
         name: true,
+        bio: true,
         role: true,
         avatar: true,
       },
@@ -249,6 +260,7 @@ describe('AuthService', () => {
         email: 'race@example.com',
         username: 'race_user',
         name: 'Race User',
+        bio: null,
         role: 'EDITOR',
         avatar: null,
       });
@@ -262,6 +274,7 @@ describe('AuthService', () => {
       email: 'race@example.com',
       username: 'race_user',
       name: 'Race User',
+      bio: null,
       role: 'EDITOR',
       avatar: null,
     });
@@ -288,6 +301,7 @@ describe('AuthService', () => {
         email: true,
         username: true,
         name: true,
+        bio: true,
         role: true,
         avatar: true,
       },
@@ -298,8 +312,146 @@ describe('AuthService', () => {
       email: 'race@example.com',
       username: 'race_user',
       name: 'Race User',
+      bio: null,
       role: 'EDITOR',
       avatar: null,
+    });
+  });
+
+  it('keeps customized name and avatar when clerk payload changes', async () => {
+    prisma.user.findUnique.mockResolvedValueOnce({
+      id: 'db-id-custom',
+      clerkId: 'user_custom',
+      email: 'custom@example.com',
+      username: 'custom_user',
+      name: 'Custom Name',
+      bio: 'My bio',
+      role: 'EDITOR',
+      avatar: 'https://example.com/custom.png',
+    });
+    prisma.user.update.mockResolvedValue({
+      id: 'db-id-custom',
+      clerkId: 'user_custom',
+      email: 'custom@example.com',
+      username: 'custom_user',
+      name: 'Custom Name',
+      bio: 'My bio',
+      role: 'EDITOR',
+      avatar: 'https://example.com/custom.png',
+    });
+
+    await service.validateClerkUser({
+      sub: 'user_custom',
+      email: 'custom@example.com',
+      username: 'custom_user',
+      name: 'Clerk Name',
+      image_url: 'https://example.com/clerk.png',
+    });
+
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { id: 'db-id-custom' },
+      data: {
+        email: 'custom@example.com',
+        username: 'custom_user',
+        name: 'Custom Name',
+        avatar: 'https://example.com/custom.png',
+      },
+      select: {
+        id: true,
+        clerkId: true,
+        email: true,
+        username: true,
+        name: true,
+        bio: true,
+        role: true,
+        avatar: true,
+      },
+    });
+  });
+
+  it('updates current user profile fields', async () => {
+    prisma.user.update.mockResolvedValue({
+      id: 'db-id-profile',
+      clerkId: 'user_profile',
+      email: 'profile@example.com',
+      username: 'profile_user',
+      name: 'Joshua',
+      bio: 'Building in public.',
+      role: 'READER',
+      avatar: 'https://example.com/avatar.png',
+    });
+
+    const result = await service.updateProfile('db-id-profile', {
+      name: '  Joshua  ',
+      bio: '  Building in public.  ',
+      avatar: '  https://example.com/avatar.png  ',
+    });
+
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { id: 'db-id-profile' },
+      data: {
+        name: 'Joshua',
+        bio: 'Building in public.',
+        avatar: 'https://example.com/avatar.png',
+      },
+      select: {
+        id: true,
+        clerkId: true,
+        email: true,
+        username: true,
+        name: true,
+        bio: true,
+        role: true,
+        avatar: true,
+      },
+    });
+    expect(result).toEqual({
+      id: 'db-id-profile',
+      clerkId: 'user_profile',
+      email: 'profile@example.com',
+      username: 'profile_user',
+      name: 'Joshua',
+      bio: 'Building in public.',
+      role: 'READER',
+      avatar: 'https://example.com/avatar.png',
+    });
+  });
+
+  it('allows clearing optional profile fields', async () => {
+    prisma.user.update.mockResolvedValue({
+      id: 'db-id-profile',
+      clerkId: 'user_profile',
+      email: 'profile@example.com',
+      username: 'profile_user',
+      name: null,
+      bio: null,
+      role: 'READER',
+      avatar: null,
+    });
+
+    await service.updateProfile('db-id-profile', {
+      name: '  ',
+      bio: '',
+      avatar: '   ',
+    });
+
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { id: 'db-id-profile' },
+      data: {
+        name: null,
+        bio: null,
+        avatar: null,
+      },
+      select: {
+        id: true,
+        clerkId: true,
+        email: true,
+        username: true,
+        name: true,
+        bio: true,
+        role: true,
+        avatar: true,
+      },
     });
   });
 });

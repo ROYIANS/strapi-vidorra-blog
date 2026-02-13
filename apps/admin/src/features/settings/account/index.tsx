@@ -1,12 +1,12 @@
 import { ContentSection } from '../components/content-section'
 import { AccountForm } from './account-form'
+import { t } from '@/i18n'
 
 export function SettingsAccount() {
   return (
     <ContentSection
-      title='Account'
-      desc='Update your account settings. Set your preferred language and
-          timezone.'
+      title={t('settings.account.title')}
+      desc={t('settings.account.desc')}
     >
       <AccountForm />
     </ContentSection>

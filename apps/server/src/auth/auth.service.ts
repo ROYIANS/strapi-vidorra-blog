@@ -19,6 +19,7 @@ const USER_SELECT = {
   email: true,
   username: true,
   name: true,
+  bio: true,
   role: true,
   avatar: true,
 } as const;
@@ -55,7 +56,10 @@ export class AuthService {
     if (existingByClerkId) {
       const updatedUsername = payload.username ? username : existingByClerkId.username;
       const updatedEmail = payload.email ? email : existingByClerkId.email;
-      const updatedName = this.getUpdatedName(payload, updatedUsername, existingByClerkId.name);
+      const updatedName =
+        existingByClerkId.name ??
+        this.getUpdatedName(payload, updatedUsername, existingByClerkId.name);
+      const updatedAvatar = existingByClerkId.avatar ?? avatar ?? null;
 
       return this.prisma.user.update({
         where: { id: existingByClerkId.id },
@@ -63,7 +67,7 @@ export class AuthService {
           email: updatedEmail,
           username: updatedUsername,
           name: updatedName,
-          avatar: avatar ?? existingByClerkId.avatar,
+          avatar: updatedAvatar,
         },
         select: USER_SELECT,
       });
@@ -121,6 +125,31 @@ export class AuthService {
     });
   }
 
+  async updateProfile(
+    userId: string,
+    profile: {
+      name?: string;
+      avatar?: string;
+      bio?: string;
+    },
+  ): Promise<SyncedUser> {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...(profile.name !== undefined
+          ? { name: this.sanitizeOptionalText(profile.name) }
+          : {}),
+        ...(profile.avatar !== undefined
+          ? { avatar: this.sanitizeOptionalText(profile.avatar) }
+          : {}),
+        ...(profile.bio !== undefined
+          ? { bio: this.sanitizeOptionalText(profile.bio) }
+          : {}),
+      },
+      select: USER_SELECT,
+    });
+  }
+
   private getEmail(payload: ClerkJwtPayload, clerkId: string) {
     return payload.email ?? `${clerkId}@clerk.local`;
   }
@@ -153,5 +182,10 @@ export class AuthService {
       'code' in error &&
       (error as { code?: string }).code === 'P2002'
     );
+  }
+
+  private sanitizeOptionalText(value: string) {
+    const trimmed = value.trim();
+    return trimmed.length === 0 ? null : trimmed;
   }
 }

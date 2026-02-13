@@ -1,12 +1,12 @@
 import { ContentSection } from '../components/content-section'
 import { AppearanceForm } from './appearance-form'
+import { t } from '@/i18n'
 
 export function SettingsAppearance() {
   return (
     <ContentSection
-      title='Appearance'
-      desc='Customize the appearance of the app. Automatically switch between day
-          and night themes.'
+      title={t('settings.appearance.title')}
+      desc={t('settings.appearance.desc')}
     >
       <AppearanceForm />
     </ContentSection>

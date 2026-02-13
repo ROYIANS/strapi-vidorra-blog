@@ -21,13 +21,25 @@ export interface AuthProfile {
   username: string
   name: string | null
   avatar: string | null
+  bio: string | null
   role: Role
   permissions: Permission[]
+}
+
+export interface UpdateProfileInput {
+  name?: string
+  avatar?: string
+  bio?: string
 }
 
 export const authService = {
   async getProfile(): Promise<AuthProfile> {
     const response = await apiClient.get<AuthProfile>('/auth/profile')
+    return response.data
+  },
+
+  async updateProfile(input: UpdateProfileInput): Promise<AuthProfile> {
+    const response = await apiClient.patch<AuthProfile>('/auth/profile', input)
     return response.data
   },
 }

@@ -1,19 +1,28 @@
-/**
- * List of available font names (visit the url `/settings/appearance`).
- * This array is used to generate dynamic font classes (e.g., `font-inter`, `font-manrope`).
- *
- * 📝 How to Add a New Font (Tailwind v4+):
- * 1. Add the font name here.
- * 2. Update the `<link>` tag in 'index.html' to include the new font from Google Fonts (or any other source).
- * 3. Add the new font family to 'index.css' using the `@theme inline` and `font-family` CSS variable.
- *
- * Example:
- * fonts.ts           → Add 'roboto' to this array.
- * index.html         → Add Google Fonts link for Roboto.
- * index.css          → Add the new font in the CSS, e.g.:
- *   @theme inline {
- *      // ... other font families
- *      --font-roboto: 'Roboto', var(--font-sans);
- *   }
- */
-export const fonts = ['inter', 'manrope', 'system'] as const
+export const fontSchemes = [
+  {
+    id: 'modern',
+    name: 'Modern Sans',
+    description: 'Outfit + Noto Sans SC',
+    preview: 'Modern Design 现代设计',
+    className: 'font-modern',
+  },
+  {
+    id: 'serif',
+    name: 'Elegant Serif',
+    description: 'Noto Serif',
+    preview: 'Elegant Style 优雅风格',
+    className: 'font-serif',
+  },
+  {
+    id: 'system',
+    name: 'System Default',
+    description: 'Use OS defaults',
+    preview: 'System Font 系统字体',
+    className: 'font-system',
+  },
+] as const
+
+export type FontScheme = (typeof fontSchemes)[number]['id']
+
+export const fonts = fontSchemes.map((scheme) => scheme.id) as unknown as
+  readonly FontScheme[]

@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router'
+import { useUser } from '@clerk/clerk-react'
 import { t } from '@/i18n'
 import { useAuthProfile } from '@/hooks/use-auth-profile'
 import useDialogState from '@/hooks/use-dialog-state'
@@ -19,10 +20,16 @@ import {
 
 export function ProfileDropdown() {
   const [open, setOpen] = useDialogState()
+  const { user } = useUser()
   const { data: authProfile } = useAuthProfile()
   const canViewUsers = (authProfile?.permissions ?? []).includes(
     PERMISSIONS.USERS_VIEW
   )
+  const displayName =
+    authProfile?.name ?? authProfile?.username ?? user?.fullName ?? t('auth.guest')
+  const displayEmail = authProfile?.email ?? user?.primaryEmailAddress?.emailAddress ?? ''
+  const displayAvatar = authProfile?.avatar ?? user?.imageUrl ?? ''
+  const initials = displayName.trim().slice(0, 2).toUpperCase()
 
   return (
     <>
@@ -30,25 +37,25 @@ export function ProfileDropdown() {
         <DropdownMenuTrigger asChild>
           <Button variant='ghost' className='relative h-8 w-8 rounded-full'>
             <Avatar className='h-8 w-8'>
-              <AvatarImage src='/avatars/01.png' alt='profile-avatar' />
-              <AvatarFallback>SN</AvatarFallback>
+              <AvatarImage src={displayAvatar} alt='profile-avatar' />
+              <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className='w-56' align='end' forceMount>
           <DropdownMenuLabel className='font-normal'>
             <div className='flex flex-col gap-1.5'>
-              <p className='text-sm leading-none font-medium'>satnaing</p>
+              <p className='text-sm leading-none font-medium'>{displayName}</p>
               <p className='text-xs leading-none text-muted-foreground'>
-                satnaingdev@gmail.com
+                {displayEmail}
               </p>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem asChild>
-              <Link to='/'>
-                {t('nav.profile')}
+              <Link to='/settings/account'>
+                {t('nav.settingsMenu')}
                 <DropdownMenuShortcut>Ctrl+P</DropdownMenuShortcut>
               </Link>
             </DropdownMenuItem>

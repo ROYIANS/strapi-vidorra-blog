@@ -32,9 +32,14 @@ export function AppSidebar() {
   )
 
   const sidebarUser = {
-    name: user?.fullName ?? user?.username ?? t('auth.guest'),
-    email: user?.primaryEmailAddress?.emailAddress ?? '',
-    avatar: user?.imageUrl ?? '',
+    name:
+      authProfile?.name ??
+      user?.fullName ??
+      authProfile?.username ??
+      user?.username ??
+      t('auth.guest'),
+    email: authProfile?.email ?? user?.primaryEmailAddress?.emailAddress ?? '',
+    avatar: authProfile?.avatar ?? user?.imageUrl ?? '',
   }
 
   return (

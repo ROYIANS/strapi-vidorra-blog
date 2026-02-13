@@ -1,13 +1,27 @@
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
-import { ChevronDownIcon } from '@radix-ui/react-icons'
+import { type SVGProps, useEffect } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { fonts } from '@/config/fonts'
-import { showSubmittedData } from '@/lib/show-submitted-data'
-import { cn } from '@/lib/utils'
-import { useFont } from '@/context/font-provider'
+import { Item } from '@radix-ui/react-radio-group'
+import { useForm } from 'react-hook-form'
+import { CircleCheck } from 'lucide-react'
+import { toast } from 'sonner'
+import { z } from 'zod'
+import { IconDir } from '@/assets/custom/icon-dir'
+import { IconLayoutCompact } from '@/assets/custom/icon-layout-compact'
+import { IconLayoutDefault } from '@/assets/custom/icon-layout-default'
+import { IconLayoutFull } from '@/assets/custom/icon-layout-full'
+import { IconSidebarFloating } from '@/assets/custom/icon-sidebar-floating'
+import { IconSidebarInset } from '@/assets/custom/icon-sidebar-inset'
+import { IconSidebarSidebar } from '@/assets/custom/icon-sidebar-sidebar'
+import { fontSchemes } from '@/config/fonts'
+import { useDirection } from '@/context/direction-provider'
+import { type Collapsible, useLayout } from '@/context/layout-provider'
 import { useTheme } from '@/context/theme-provider'
-import { Button, buttonVariants } from '@/components/ui/button'
+import { useThemeColor } from '@/context/theme-color-provider'
+import { useFont } from '@/context/font-provider'
+import { t } from '@/i18n'
+import { type ThemeColorName, themeColors } from '@/lib/theme-colors'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -17,35 +31,71 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { RadioGroup, RadioGroupItem as RadioItem } from '@/components/ui/radio-group'
+import { Separator } from '@/components/ui/separator'
+import { useSidebar } from '@/components/ui/sidebar'
 
 const appearanceFormSchema = z.object({
   theme: z.enum(['light', 'dark']),
-  font: z.enum(fonts),
+  themeColor: z.enum(['default', 'red', 'yellow', 'blue', 'green', 'brown', 'orange']),
+  variant: z.enum(['inset', 'floating', 'sidebar']),
+  layout: z.enum(['default', 'icon', 'offcanvas']),
+  dir: z.enum(['ltr', 'rtl']),
 })
 
 type AppearanceFormValues = z.infer<typeof appearanceFormSchema>
 
-export function AppearanceForm() {
-  const { font, setFont } = useFont()
-  const { theme, setTheme } = useTheme()
+function resolveLayoutValue(open: boolean, collapsible: 'offcanvas' | 'icon' | 'none') {
+  if (open) return 'default' as const
+  return collapsible === 'offcanvas' ? ('offcanvas' as const) : ('icon' as const)
+}
 
-  // This can come from your database or API.
-  const defaultValues: Partial<AppearanceFormValues> = {
-    theme: theme as 'light' | 'dark',
-    font,
-  }
+export function AppearanceForm() {
+  const { open, setOpen } = useSidebar()
+  const { theme, setTheme } = useTheme()
+  const { themeColor, setThemeColor } = useThemeColor()
+  const { font, setFont } = useFont()
+  const { variant, setVariant, collapsible, setCollapsible } = useLayout()
+  const { dir, setDir } = useDirection()
+
+  const layoutValue = resolveLayoutValue(open, collapsible)
 
   const form = useForm<AppearanceFormValues>({
     resolver: zodResolver(appearanceFormSchema),
-    defaultValues,
+    defaultValues: {
+      theme: theme === 'system' ? 'light' : (theme as 'light' | 'dark'),
+      themeColor,
+      variant,
+      layout: layoutValue,
+      dir,
+    },
   })
 
-  function onSubmit(data: AppearanceFormValues) {
-    if (data.font != font) setFont(data.font)
-    if (data.theme != theme) setTheme(data.theme)
+  useEffect(() => {
+    form.reset({
+      theme: theme === 'system' ? 'light' : (theme as 'light' | 'dark'),
+      themeColor,
+      variant,
+      layout: resolveLayoutValue(open, collapsible),
+      dir,
+    })
+  }, [collapsible, dir, form, open, theme, themeColor, variant])
 
-    showSubmittedData(data)
+  function onSubmit(data: AppearanceFormValues) {
+    if (data.theme !== theme) setTheme(data.theme)
+    if (data.themeColor !== themeColor) setThemeColor(data.themeColor)
+    if (data.variant !== variant) setVariant(data.variant)
+
+    if (data.layout === 'default') {
+      setOpen(true)
+    } else {
+      setOpen(false)
+      setCollapsible(data.layout as Collapsible)
+    }
+
+    if (data.dir !== dir) setDir(data.dir)
+
+    toast.success(t('settings.appearance.updated'))
   }
 
   return (
@@ -53,45 +103,11 @@ export function AppearanceForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
         <FormField
           control={form.control}
-          name='font'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Font</FormLabel>
-              <div className='relative w-max'>
-                <FormControl>
-                  <select
-                    className={cn(
-                      buttonVariants({ variant: 'outline' }),
-                      'w-[200px] appearance-none font-normal capitalize',
-                      'dark:bg-background dark:hover:bg-background'
-                    )}
-                    {...field}
-                  >
-                    {fonts.map((font) => (
-                      <option key={font} value={font}>
-                        {font}
-                      </option>
-                    ))}
-                  </select>
-                </FormControl>
-                <ChevronDownIcon className='absolute end-3 top-2.5 h-4 w-4 opacity-50' />
-              </div>
-              <FormDescription className='font-manrope'>
-                Set the font you want to use in the dashboard.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
           name='theme'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Theme</FormLabel>
-              <FormDescription>
-                Select the theme for the dashboard.
-              </FormDescription>
+              <FormLabel>{t('settings.appearance.theme')}</FormLabel>
+              <FormDescription>{t('settings.appearance.themeDesc')}</FormDescription>
               <FormMessage />
               <RadioGroup
                 onValueChange={field.onChange}
@@ -99,11 +115,11 @@ export function AppearanceForm() {
                 className='grid max-w-md grid-cols-2 gap-8 pt-2'
               >
                 <FormItem>
-                  <FormLabel className='[&:has([data-state=checked])>div]:border-primary'>
+                  <FormLabel className='[&:has([data-state=checked])>div]:border-primary cursor-pointer'>
                     <FormControl>
-                      <RadioGroupItem value='light' className='sr-only' />
+                      <RadioItem value='light' className='sr-only' />
                     </FormControl>
-                    <div className='items-center rounded-md border-2 border-muted p-1 hover:border-accent'>
+                    <div className='border-muted hover:border-accent items-center rounded-md border-2 p-1'>
                       <div className='space-y-2 rounded-sm bg-[#ecedef] p-2'>
                         <div className='space-y-2 rounded-md bg-white p-2 shadow-xs'>
                           <div className='h-2 w-[80px] rounded-lg bg-[#ecedef]' />
@@ -120,16 +136,16 @@ export function AppearanceForm() {
                       </div>
                     </div>
                     <span className='block w-full p-2 text-center font-normal'>
-                      Light
+                      {t('settings.appearance.light')}
                     </span>
                   </FormLabel>
                 </FormItem>
                 <FormItem>
-                  <FormLabel className='[&:has([data-state=checked])>div]:border-primary'>
+                  <FormLabel className='[&:has([data-state=checked])>div]:border-primary cursor-pointer'>
                     <FormControl>
-                      <RadioGroupItem value='dark' className='sr-only' />
+                      <RadioItem value='dark' className='sr-only' />
                     </FormControl>
-                    <div className='items-center rounded-md border-2 border-muted bg-popover p-1 hover:bg-accent hover:text-accent-foreground'>
+                    <div className='border-muted bg-popover hover:bg-accent hover:text-accent-foreground items-center rounded-md border-2 p-1'>
                       <div className='space-y-2 rounded-sm bg-slate-950 p-2'>
                         <div className='space-y-2 rounded-md bg-slate-800 p-2 shadow-xs'>
                           <div className='h-2 w-[80px] rounded-lg bg-slate-400' />
@@ -146,7 +162,7 @@ export function AppearanceForm() {
                       </div>
                     </div>
                     <span className='block w-full p-2 text-center font-normal'>
-                      Dark
+                      {t('settings.appearance.dark')}
                     </span>
                   </FormLabel>
                 </FormItem>
@@ -155,8 +171,198 @@ export function AppearanceForm() {
           )}
         />
 
-        <Button type='submit'>Update preferences</Button>
+        <Separator />
+
+        <FormField
+          control={form.control}
+          name='themeColor'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('settings.appearance.themeColor')}</FormLabel>
+              <FormDescription>{t('settings.appearance.themeColorDesc')}</FormDescription>
+              <FormMessage />
+              <RadioGroup
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                className='grid max-w-lg grid-cols-2 gap-2 pt-2 md:grid-cols-4'
+              >
+                {(Object.keys(themeColors) as ThemeColorName[]).map((colorName) => (
+                  <FormItem key={colorName}>
+                    <FormLabel className='[&:has([data-state=checked])>div]:border-primary cursor-pointer'>
+                      <FormControl>
+                        <RadioItem value={colorName} className='sr-only' />
+                      </FormControl>
+                      <div className='border-muted hover:border-accent flex items-center gap-2 rounded-md border-2 px-3 py-2 transition-colors'>
+                        <div
+                          className='h-5 w-5 flex-shrink-0 rounded-full border border-border shadow-sm'
+                          style={{ backgroundColor: themeColors[colorName].light.primary }}
+                        />
+                        <span className='text-sm font-medium whitespace-nowrap'>
+                          {themeColors[colorName].label}
+                        </span>
+                      </div>
+                    </FormLabel>
+                  </FormItem>
+                ))}
+              </RadioGroup>
+            </FormItem>
+          )}
+        />
+
+        <Separator />
+
+        <div className='space-y-3'>
+          <div>
+            <h3 className='text-sm font-medium'>{t('settings.appearance.fontScheme')}</h3>
+            <p className='mt-1 text-sm text-muted-foreground'>
+              {t('settings.appearance.fontSchemeDesc')}
+            </p>
+          </div>
+          <div className='grid max-w-2xl grid-cols-1 gap-3 pt-2 md:grid-cols-3'>
+            {fontSchemes.map((scheme) => (
+              <button
+                key={scheme.id}
+                type='button'
+                onClick={() => setFont(scheme.id)}
+                className={cn(
+                  'text-left rounded-lg border-2 px-4 py-3 transition-all',
+                  'hover:border-accent hover:shadow-sm',
+                  font === scheme.id ? 'border-primary bg-primary/5 shadow-sm' : 'border-muted'
+                )}
+              >
+                <div className={cn('space-y-1', scheme.className)}>
+                  <div className='flex items-center justify-between'>
+                    <div className='text-sm font-semibold'>{scheme.name}</div>
+                    {font === scheme.id && <CircleCheck className='h-4 w-4 text-primary' />}
+                  </div>
+                  <div className='text-xs text-muted-foreground'>{scheme.description}</div>
+                  <div className='pt-1 text-xs opacity-75'>{scheme.preview}</div>
+                </div>
+              </button>
+            ))}
+          </div>
+          <p className='text-xs text-muted-foreground'>{t('settings.appearance.fontTip')}</p>
+        </div>
+
+        <Separator />
+
+        <FormField
+          control={form.control}
+          name='variant'
+          render={({ field }) => (
+            <FormItem className='max-md:hidden'>
+              <FormLabel>{t('settings.appearance.sidebarStyle')}</FormLabel>
+              <FormDescription>{t('settings.appearance.sidebarStyleDesc')}</FormDescription>
+              <FormMessage />
+              <RadioGroup
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                className='grid max-w-md grid-cols-3 gap-8 pt-2'
+              >
+                <RadioGroupItemWithIcon value='inset' label={t('settings.appearance.sidebarInset')} icon={IconSidebarInset} />
+                <RadioGroupItemWithIcon value='floating' label={t('settings.appearance.sidebarFloating')} icon={IconSidebarFloating} />
+                <RadioGroupItemWithIcon value='sidebar' label={t('settings.appearance.sidebarStandard')} icon={IconSidebarSidebar} />
+              </RadioGroup>
+            </FormItem>
+          )}
+        />
+
+        <Separator />
+
+        <FormField
+          control={form.control}
+          name='layout'
+          render={({ field }) => (
+            <FormItem className='max-md:hidden'>
+              <FormLabel>{t('settings.appearance.layoutMode')}</FormLabel>
+              <FormDescription>{t('settings.appearance.layoutModeDesc')}</FormDescription>
+              <FormMessage />
+              <RadioGroup
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                className='grid max-w-md grid-cols-3 gap-8 pt-2'
+              >
+                <RadioGroupItemWithIcon value='default' label={t('settings.appearance.layoutDefault')} icon={IconLayoutDefault} />
+                <RadioGroupItemWithIcon value='icon' label={t('settings.appearance.layoutCompact')} icon={IconLayoutCompact} />
+                <RadioGroupItemWithIcon value='offcanvas' label={t('settings.appearance.layoutFull')} icon={IconLayoutFull} />
+              </RadioGroup>
+            </FormItem>
+          )}
+        />
+
+        <Separator />
+
+        <FormField
+          control={form.control}
+          name='dir'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('settings.appearance.direction')}</FormLabel>
+              <FormDescription>{t('settings.appearance.directionDesc')}</FormDescription>
+              <FormMessage />
+              <RadioGroup
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                className='grid max-w-md grid-cols-2 gap-8 pt-2'
+              >
+                <RadioGroupItemWithIcon
+                  value='ltr'
+                  label={t('settings.appearance.ltr')}
+                  icon={(props: SVGProps<SVGSVGElement>) => <IconDir dir='ltr' {...props} />}
+                />
+                <RadioGroupItemWithIcon
+                  value='rtl'
+                  label={t('settings.appearance.rtl')}
+                  icon={(props: SVGProps<SVGSVGElement>) => <IconDir dir='rtl' {...props} />}
+                />
+              </RadioGroup>
+            </FormItem>
+          )}
+        />
+
+        <Button type='submit'>{t('settings.appearance.submit')}</Button>
       </form>
     </Form>
+  )
+}
+
+function RadioGroupItemWithIcon({
+  value,
+  label,
+  icon: Icon,
+}: {
+  value: string
+  label: string
+  icon: (props: SVGProps<SVGSVGElement>) => React.ReactElement
+}) {
+  return (
+    <Item
+      value={value}
+      className={cn('group outline-none', 'transition duration-200 ease-in')}
+    >
+      <div
+        className={cn(
+          'ring-border relative rounded-[6px] ring-[1px]',
+          'group-data-[state=checked]:ring-primary group-data-[state=checked]:shadow-2xl',
+          'group-focus-visible:ring-2'
+        )}
+      >
+        <CircleCheck
+          className={cn(
+            'fill-primary size-6 stroke-white',
+            'group-data-[state=unchecked]:hidden',
+            'absolute top-0 right-0 translate-x-1/2 -translate-y-1/2'
+          )}
+        />
+        <Icon
+          className={cn(
+            'stroke-primary fill-primary',
+            'group-data-[state=unchecked]:stroke-muted-foreground',
+            'group-data-[state=unchecked]:fill-muted-foreground'
+          )}
+        />
+      </div>
+      <div className='mt-1 text-center text-xs'>{label}</div>
+    </Item>
   )
 }
