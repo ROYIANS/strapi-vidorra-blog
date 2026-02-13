@@ -53,7 +53,10 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
 
               // If layout is fixed and sidebar is inset,
               // set the height to 100svh - spacing (total margins) to prevent overflow
-              'peer-data-[variant=inset]:has-data-[layout=fixed]:h-[calc(100svh-(var(--spacing)*4))]'
+              'peer-data-[variant=inset]:has-data-[layout=fixed]:h-[calc(100svh-(var(--spacing)*4))]',
+
+              // Keep scroll within inner content sections for fixed pages.
+              'has-data-[layout=fixed]:overflow-hidden'
             )}
           >
             {children ?? <Outlet />}

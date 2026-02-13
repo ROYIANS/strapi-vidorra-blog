@@ -2,7 +2,7 @@ import { StrictMode, useEffect } from 'react'
 import ReactDOM from 'react-dom/client'
 import { AxiosError } from 'axios'
 import { ClerkProvider, useAuth } from '@clerk/clerk-react'
-import { zhCN } from '@clerk/localizations'
+import { enUS as clerkEnUS, zhCN as clerkZhCN } from '@clerk/localizations'
 import {
   QueryCache,
   QueryClient,
@@ -11,7 +11,7 @@ import {
 } from '@tanstack/react-query'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { toast } from 'sonner'
-import { t } from '@/i18n'
+import { getLocale, t } from '@/i18n'
 import { setAccessTokenProvider } from '@/lib/api-client'
 import { handleServerError } from '@/lib/handle-server-error'
 import { DirectionProvider } from './context/direction-provider'
@@ -24,6 +24,7 @@ import { routeTree } from './routeTree.gen'
 import './styles/index.css'
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+const clerkLocalization = getLocale() === 'en-US' ? clerkEnUS : clerkZhCN
 
 function ClerkTokenBridge() {
   const { getToken, isLoaded, isSignedIn } = useAuth()
@@ -114,7 +115,7 @@ if (!rootElement.innerHTML) {
         {PUBLISHABLE_KEY ? (
           <ClerkProvider
             publishableKey={PUBLISHABLE_KEY}
-            localization={zhCN}
+            localization={clerkLocalization}
             afterSignOutUrl='/sign-in'
             signInUrl='/sign-in'
             signUpUrl='/sign-up'

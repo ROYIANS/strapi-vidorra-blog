@@ -10,7 +10,11 @@ export const Route = createFileRoute('/(auth)/sign-up')({
 function SignUpPage() {
   return (
     <AuthLayout>
-      <SignUp fallback={<Skeleton className='h-[30rem] w-[25rem]' />} />
+      <SignUp
+        oauthFlow='redirect'
+        fallbackRedirectUrl='/'
+        fallback={<Skeleton className='h-[30rem] w-[25rem]' />}
+      />
     </AuthLayout>
   )
 }

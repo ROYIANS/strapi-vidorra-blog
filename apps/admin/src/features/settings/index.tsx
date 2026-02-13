@@ -1,5 +1,5 @@
 import { Outlet } from '@tanstack/react-router'
-import { Info, Monitor, Palette, UserCog } from 'lucide-react'
+import { Info, Palette, UserCog } from 'lucide-react'
 import { t } from '@/i18n'
 import { Separator } from '@/components/ui/separator'
 import { ConfigDrawer } from '@/components/config-drawer'
@@ -20,11 +20,6 @@ const sidebarNavItems = [
     title: t('settings.tabs.appearance'),
     href: '/settings/appearance',
     icon: <Palette size={18} />,
-  },
-  {
-    title: t('settings.tabs.display'),
-    href: '/settings/display',
-    icon: <Monitor size={18} />,
   },
   {
     title: t('settings.tabs.about'),
@@ -56,11 +51,11 @@ export function Settings() {
           </p>
         </div>
         <Separator className='my-4 lg:my-6' />
-        <div className='flex flex-1 flex-col space-y-2 overflow-hidden md:space-y-2 lg:flex-row lg:space-y-0 lg:space-x-12'>
+        <div className='flex min-h-0 flex-1 flex-col space-y-2 overflow-hidden md:space-y-2 lg:flex-row lg:space-y-0 lg:space-x-12'>
           <aside className='top-0 lg:sticky lg:w-1/5'>
             <SidebarNav items={sidebarNavItems} />
           </aside>
-          <div className='flex w-full overflow-y-hidden p-1'>
+          <div className='flex min-h-0 w-full p-1'>
             <Outlet />
           </div>
         </div>

@@ -160,7 +160,6 @@ export const zhCN = {
     tabs: {
       account: '\u8d26\u6237',
       appearance: '\u5916\u89c2',
-      display: '\u663e\u793a',
       about: '\u5173\u4e8e',
     },
     account: {
@@ -200,6 +199,11 @@ export const zhCN = {
       fontScheme: '\u5b57\u4f53\u65b9\u6848',
       fontSchemeDesc: '\u9009\u62e9\u540e\u53f0\u4f7f\u7528\u7684\u5b57\u4f53\u7ec4\u5408\uff08\u70b9\u51fb\u5373\u65f6\u751f\u6548\uff09\u3002',
       fontTip: '\u4ee3\u7801\u5b57\u4f53\uff08JetBrains Mono\uff09\u4f1a\u81ea\u52a8\u7528\u4e8e\u4ee3\u7801\u533a\u57df\u3002',
+      language: '\u754c\u9762\u8bed\u8a00',
+      languageDesc: '\u9009\u62e9\u540e\u53f0\u754c\u9762\u7684\u663e\u793a\u8bed\u8a00\u3002',
+      languageZhCn: '\u7b80\u4f53\u4e2d\u6587',
+      languageEnUs: '\u82f1\u8bed\uff08\u7f8e\u56fd\uff09',
+      languageUpdated: '\u8bed\u8a00\u5df2\u66f4\u65b0\uff0c\u6b63\u5728\u5237\u65b0\u9875\u9762...',
       sidebarStyle: '\u4fa7\u8fb9\u680f\u6837\u5f0f',
       sidebarStyleDesc: '\u9009\u62e9\u4fa7\u8fb9\u680f\u663e\u793a\u98ce\u683c\u3002',
       sidebarInset: '\u5185\u5d4c',
@@ -216,18 +220,6 @@ export const zhCN = {
       rtl: '\u4ece\u53f3\u5230\u5de6',
       submit: '\u66f4\u65b0\u8bbe\u7f6e',
       updated: '\u5916\u89c2\u8bbe\u7f6e\u5df2\u66f4\u65b0',
-    },
-    display: {
-      title: '\u663e\u793a',
-      desc: '\u7ba1\u7406\u4fa7\u8fb9\u680f\u3001\u5e03\u5c40\u548c\u6587\u672c\u65b9\u5411\u3002',
-      sidebarStyle: '\u4fa7\u8fb9\u680f\u6837\u5f0f',
-      sidebarStyleDesc: '\u63a7\u5236\u4fa7\u8fb9\u680f\u5916\u89c2\u4e0e\u5bb9\u5668\u8868\u73b0\u3002',
-      layoutMode: '\u5e03\u5c40\u6a21\u5f0f',
-      layoutModeDesc: '\u9ed8\u8ba4\u4e3a\u5c55\u5f00\uff0c\u7d27\u51d1\u6a21\u5f0f\u4ec5\u4fdd\u7559\u56fe\u6807\u3002',
-      direction: '\u6587\u672c\u65b9\u5411',
-      directionDesc: '\u5207\u6362\u754c\u9762\u548c\u6587\u672c\u7684\u6392\u7248\u65b9\u5411\u3002',
-      submit: '\u66f4\u65b0\u663e\u793a\u8bbe\u7f6e',
-      updated: '\u663e\u793a\u8bbe\u7f6e\u5df2\u66f4\u65b0',
     },
     about: {
       title: '\u5173\u4e8e',
