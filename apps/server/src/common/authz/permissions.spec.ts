@@ -1,6 +1,19 @@
-import { getPermissionsForRole, getPermissionsForRoles, PERMISSIONS } from './permissions';
+import {
+  getPermissionsForRole,
+  getPermissionsForRoles,
+  PERMISSIONS,
+  ROLES,
+} from './permissions';
 
 describe('permissions', () => {
+  it('exposes stable role constants for cross-app reuse', () => {
+    expect(ROLES).toEqual({
+      ADMIN: 'ADMIN',
+      EDITOR: 'EDITOR',
+      READER: 'READER',
+    });
+  });
+
   it('grants all user-management permissions to ADMIN', () => {
     const permissions = getPermissionsForRole('ADMIN');
 
