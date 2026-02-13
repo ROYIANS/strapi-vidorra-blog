@@ -237,4 +237,68 @@ describe('AuthService', () => {
       where: { clerkId: 'user_delete_me' },
     });
   });
+
+  it('recovers from concurrent create unique conflict by retrying sync', async () => {
+    prisma.user.findUnique
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({
+        id: 'db-id-race',
+        clerkId: 'user_race',
+        email: 'race@example.com',
+        username: 'race_user',
+        name: 'Race User',
+        role: 'USER',
+        avatar: null,
+      });
+    prisma.user.count.mockResolvedValueOnce(2);
+    prisma.user.create.mockRejectedValueOnce({
+      code: 'P2002',
+    });
+    prisma.user.update.mockResolvedValueOnce({
+      id: 'db-id-race',
+      clerkId: 'user_race',
+      email: 'race@example.com',
+      username: 'race_user',
+      name: 'Race User',
+      role: 'USER',
+      avatar: null,
+    });
+
+    const result = await service.validateClerkUser({
+      sub: 'user_race',
+      email: 'race@example.com',
+      username: 'race_user',
+      name: 'Race User',
+    });
+
+    expect(prisma.user.create).toHaveBeenCalledTimes(1);
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { id: 'db-id-race' },
+      data: {
+        email: 'race@example.com',
+        username: 'race_user',
+        name: 'Race User',
+        avatar: null,
+      },
+      select: {
+        id: true,
+        clerkId: true,
+        email: true,
+        username: true,
+        name: true,
+        role: true,
+        avatar: true,
+      },
+    });
+    expect(result).toEqual({
+      id: 'db-id-race',
+      clerkId: 'user_race',
+      email: 'race@example.com',
+      username: 'race_user',
+      name: 'Race User',
+      role: 'USER',
+      avatar: null,
+    });
+  });
 });

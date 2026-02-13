@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
 interface ClerkJwtPayload {
@@ -22,15 +23,22 @@ const USER_SELECT = {
   avatar: true,
 } as const;
 
+type SyncedUser = Prisma.UserGetPayload<{
+  select: typeof USER_SELECT;
+}>;
+
 @Injectable()
 export class AuthService {
   constructor(private prisma: PrismaService) {}
 
-  async validateClerkUser(payload: ClerkJwtPayload) {
+  async validateClerkUser(payload: ClerkJwtPayload): Promise<SyncedUser | null> {
     return this.syncClerkUser(payload);
   }
 
-  async syncClerkUser(payload: ClerkJwtPayload) {
+  async syncClerkUser(
+    payload: ClerkJwtPayload,
+    hasRetried = false,
+  ): Promise<SyncedUser | null> {
     const clerkId = payload?.sub;
     if (!clerkId) return null;
 
@@ -83,19 +91,28 @@ export class AuthService {
 
     const usersCount = await this.prisma.user.count();
 
-    return this.prisma.user.create({
-      data: {
-        clerkId,
-        email,
-        username,
-        name,
-        avatar,
-        // Local password is no longer used after Clerk migration.
-        password: `CLERK_AUTH_ONLY_${clerkId}`,
-        role: usersCount === 0 ? 'ADMIN' : 'USER',
-      },
-      select: USER_SELECT,
-    });
+    try {
+      return await this.prisma.user.create({
+        data: {
+          clerkId,
+          email,
+          username,
+          name,
+          avatar,
+          // Local password is no longer used after Clerk migration.
+          password: `CLERK_AUTH_ONLY_${clerkId}`,
+          role: usersCount === 0 ? 'ADMIN' : 'USER',
+        },
+        select: USER_SELECT,
+      });
+    } catch (error: unknown) {
+      if (!hasRetried && this.isUniqueConstraintError(error)) {
+        // Concurrent sync may create the same user in another request.
+        // Retry once to re-enter lookup/update path.
+        return this.syncClerkUser(payload, true);
+      }
+      throw error;
+    }
   }
 
   async deleteClerkUser(clerkId: string) {
@@ -129,5 +146,14 @@ export class AuthService {
       return this.getName(payload, username);
     }
     return currentName ?? username;
+  }
+
+  private isUniqueConstraintError(error: unknown) {
+    return (
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      (error as { code?: string }).code === 'P2002'
+    );
   }
 }
