@@ -1,5 +1,6 @@
 import { useAuth } from '@clerk/clerk-react'
 import { Navigate, Outlet, useLocation } from '@tanstack/react-router'
+import { t } from '@/i18n'
 import { getCookie } from '@/lib/cookies'
 import { cn } from '@/lib/utils'
 import { LayoutProvider } from '@/context/layout-provider'
@@ -18,7 +19,11 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
   const defaultOpen = getCookie('sidebar_state') !== 'false'
 
   if (!isLoaded) {
-    return <div className='flex h-svh items-center justify-center'>Loading...</div>
+    return (
+      <div className='flex h-svh items-center justify-center'>
+        {t('common.loading')}
+      </div>
+    )
   }
 
   if (!isSignedIn) {

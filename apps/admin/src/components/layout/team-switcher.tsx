@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { ChevronsUpDown, Plus } from 'lucide-react'
+import { t } from '@/i18n'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,9 +42,7 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
                 <activeTeam.logo className='size-4' />
               </div>
               <div className='grid flex-1 text-start text-sm leading-tight'>
-                <span className='truncate font-semibold'>
-                  {activeTeam.name}
-                </span>
+                <span className='truncate font-semibold'>{activeTeam.name}</span>
                 <span className='truncate text-xs'>{activeTeam.plan}</span>
               </div>
               <ChevronsUpDown className='ms-auto' />
@@ -56,7 +55,7 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
             sideOffset={4}
           >
             <DropdownMenuLabel className='text-xs text-muted-foreground'>
-              Teams
+              {t('nav.teams')}
             </DropdownMenuLabel>
             {teams.map((team, index) => (
               <DropdownMenuItem
@@ -68,7 +67,7 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
                   <team.logo className='size-4 shrink-0' />
                 </div>
                 {team.name}
-                <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
+                <DropdownMenuShortcut>{`Ctrl+${index + 1}`}</DropdownMenuShortcut>
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
@@ -76,7 +75,9 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
               <div className='flex size-6 items-center justify-center rounded-md border bg-background'>
                 <Plus className='size-4' />
               </div>
-              <div className='font-medium text-muted-foreground'>Add team</div>
+              <div className='font-medium text-muted-foreground'>
+                {t('nav.addTeam')}
+              </div>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

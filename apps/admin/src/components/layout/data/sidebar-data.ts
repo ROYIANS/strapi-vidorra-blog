@@ -3,6 +3,7 @@ import {
   Users,
   Command,
 } from 'lucide-react'
+import { t } from '@/i18n'
 import { type SidebarData } from '../types'
 
 export const sidebarData: SidebarData = {
@@ -15,15 +16,15 @@ export const sidebarData: SidebarData = {
   ],
   navGroups: [
     {
-      title: 'Management',
+      title: t('nav.management'),
       items: [
         {
-          title: 'Dashboard',
+          title: t('nav.dashboard'),
           url: '/',
           icon: LayoutDashboard,
         },
         {
-          title: 'Users',
+          title: t('nav.users'),
           url: '/users',
           icon: Users,
         },

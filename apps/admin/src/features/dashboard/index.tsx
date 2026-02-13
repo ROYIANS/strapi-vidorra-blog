@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router'
+import { t } from '@/i18n'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
@@ -15,19 +16,21 @@ export function Dashboard() {
 
       <Main className='flex flex-1 flex-col gap-4 sm:gap-6'>
         <div>
-          <h1 className='text-2xl font-bold tracking-tight'>Dashboard</h1>
+          <h1 className='text-2xl font-bold tracking-tight'>
+            {t('dashboard.title')}
+          </h1>
           <p className='text-muted-foreground'>
-            Clerk authentication is enabled. Continue in User Management.
+            {t('dashboard.description')}
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Next step</CardTitle>
+            <CardTitle>{t('dashboard.nextStep')}</CardTitle>
           </CardHeader>
           <CardContent>
             <Link to='/users' className='text-primary underline underline-offset-4'>
-              Open user management
+              {t('dashboard.openUsers')}
             </Link>
           </CardContent>
         </Card>

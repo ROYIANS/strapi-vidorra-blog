@@ -1,19 +1,7 @@
 import { apiClient } from '@/lib/api-client'
 import type { User } from './auth.service'
 
-export interface CreateUserRequest {
-  email: string
-  username: string
-  password: string
-  name?: string
-  role?: 'USER' | 'ADMIN' | 'EDITOR'
-}
-
 export interface UpdateUserRequest {
-  email?: string
-  username?: string
-  name?: string
-  password?: string
   role?: 'USER' | 'ADMIN' | 'EDITOR'
   isActive?: boolean
 }
@@ -38,11 +26,6 @@ export const usersService = {
 
   async getUser(id: string): Promise<User> {
     const response = await apiClient.get<User>(`/users/${id}`)
-    return response.data
-  },
-
-  async createUser(data: CreateUserRequest): Promise<User> {
-    const response = await apiClient.post<User>('/users', data)
     return response.data
   },
 

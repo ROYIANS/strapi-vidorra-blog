@@ -1,7 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { t } from '@/i18n'
 import { usersService } from '@/services/users.service'
-import type { CreateUserRequest, UpdateUserRequest } from '@/services/users.service'
+import type { UpdateUserRequest } from '@/services/users.service'
 
 export function useUsers(page = 1, limit = 10) {
   return useQuery({
@@ -18,22 +19,6 @@ export function useUser(id: string) {
   })
 }
 
-export function useCreateUser() {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: (data: CreateUserRequest) => usersService.createUser(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] })
-      toast.success('User created successfully')
-    },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Failed to create user'
-      toast.error(message)
-    },
-  })
-}
-
 export function useUpdateUser() {
   const queryClient = useQueryClient()
 
@@ -42,10 +27,10 @@ export function useUpdateUser() {
       usersService.updateUser(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] })
-      toast.success('User updated successfully')
+      toast.success(t('users.toasts.updated'))
     },
     onError: (error: any) => {
-      const message = error.response?.data?.message || 'Failed to update user'
+      const message = error.response?.data?.message || t('users.toasts.updateFailed')
       toast.error(message)
     },
   })
@@ -58,10 +43,10 @@ export function useDeleteUser() {
     mutationFn: (id: string) => usersService.deleteUser(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] })
-      toast.success('User deleted successfully')
+      toast.success(t('users.toasts.deleted'))
     },
     onError: (error: any) => {
-      const message = error.response?.data?.message || 'Failed to delete user'
+      const message = error.response?.data?.message || t('users.toasts.deleteFailed')
       toast.error(message)
     },
   })

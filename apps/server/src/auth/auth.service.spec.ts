@@ -183,6 +183,7 @@ describe('AuthService', () => {
         avatar: true,
       },
     });
+    expect(prisma.user.create.mock.calls[0][0].data).not.toHaveProperty('password');
     expect(result).toEqual({
       id: 'db-id-2',
       clerkId: 'user_first',

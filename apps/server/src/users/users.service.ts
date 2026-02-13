@@ -5,40 +5,11 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
-
-  async create(createUserDto: CreateUserDto) {
-    const existingUser = await this.prisma.user.findFirst({
-      where: {
-        OR: [
-          { email: createUserDto.email },
-          { username: createUserDto.username },
-        ],
-      },
-    });
-
-    if (existingUser) {
-      throw new ConflictException('User with this email or username already exists');
-    }
-
-    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-
-    const user = await this.prisma.user.create({
-      data: {
-        ...createUserDto,
-        password: hashedPassword,
-      },
-    });
-
-    const { password, ...result } = user;
-    return result;
-  }
 
   async findAll(page = 1, limit = 10) {
     const skip = (page - 1) * limit;
@@ -134,10 +105,6 @@ export class UsersService {
       if (activeAdminsCount <= 1) {
         throw new ConflictException('Cannot modify the last active admin');
       }
-    }
-
-    if (updateUserDto.password) {
-      updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     }
 
     const updated = await this.prisma.user.update({

@@ -1,4 +1,5 @@
 import { useClerk } from '@clerk/clerk-react'
+import { t } from '@/i18n'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 
 interface SignOutDialogProps {
@@ -17,9 +18,9 @@ export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
     <ConfirmDialog
       open={open}
       onOpenChange={onOpenChange}
-      title='Sign out'
-      desc='Are you sure you want to sign out? You will need to sign in again to access your account.'
-      confirmText='Sign out'
+      title={t('auth.signOut.title')}
+      desc={t('auth.signOut.description')}
+      confirmText={t('auth.signOut.confirm')}
       destructive
       handleConfirm={handleSignOut}
       className='sm:max-w-sm'

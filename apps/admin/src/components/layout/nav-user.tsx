@@ -5,6 +5,7 @@ import {
   Shield,
   Users,
 } from 'lucide-react'
+import { t } from '@/i18n'
 import useDialogState from '@/hooks/use-dialog-state'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
@@ -80,13 +81,13 @@ export function NavUser({ user }: NavUserProps) {
                 <DropdownMenuItem asChild>
                   <Link to='/'>
                     <Shield />
-                    Dashboard
+                    {t('nav.dashboard')}
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link to='/users'>
                     <Users />
-                    Users
+                    {t('nav.users')}
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
@@ -96,7 +97,7 @@ export function NavUser({ user }: NavUserProps) {
                 onClick={() => setOpen(true)}
               >
                 <LogOut />
-                Sign out
+                {t('nav.signOut')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

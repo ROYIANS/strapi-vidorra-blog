@@ -2,11 +2,13 @@
 
 import { useState } from 'react'
 import { AlertTriangle } from 'lucide-react'
+import { t } from '@/i18n'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useDeleteUser } from '@/hooks/use-users'
+import { roles } from '../data/data'
 import { type User } from '../data/schema'
 
 type UserDeleteDialogProps = {
@@ -22,6 +24,7 @@ export function UsersDeleteDialog({
 }: UserDeleteDialogProps) {
   const [value, setValue] = useState('')
   const deleteUser = useDeleteUser()
+  const roleLabel = roles.find((role) => role.value === currentRow.role)?.label ?? currentRow.role
 
   const handleDelete = async () => {
     if (value.trim() !== currentRow.username || deleteUser.isPending) return
@@ -52,38 +55,40 @@ export function UsersDeleteDialog({
             className='me-1 inline-block stroke-destructive'
             size={18}
           />{' '}
-          Delete User
+          {t('users.deleteDialog.title')}
         </span>
       }
       desc={
         <div className='space-y-4'>
           <p className='mb-2'>
-            Are you sure you want to delete{' '}
-            <span className='font-bold'>{currentRow.username}</span>?
-            <br />
-            This action will permanently remove the user with the role of{' '}
-            <span className='font-bold'>{currentRow.role.toUpperCase()}</span>{' '}
-            from the system. This cannot be undone.
+            {t('users.deleteDialog.description', {
+              username: currentRow.username,
+              role: roleLabel,
+            })}
           </p>
 
           <Label className='my-2'>
-            Username:
+            {t('users.deleteDialog.usernameLabel')}
             <Input
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              placeholder='Enter username to confirm deletion.'
+              placeholder={t('users.placeholders.confirmDeleteUser')}
             />
           </Label>
 
           <Alert variant='destructive'>
-            <AlertTitle>Warning!</AlertTitle>
+            <AlertTitle>{t('common.warning')}</AlertTitle>
             <AlertDescription>
-              Please be careful, this operation can not be rolled back.
+              {t('users.deleteDialog.warning')}
             </AlertDescription>
           </Alert>
         </div>
       }
-      confirmText={deleteUser.isPending ? 'Deleting...' : 'Delete'}
+      confirmText={
+        deleteUser.isPending
+          ? t('users.deleteDialog.deleting')
+          : t('users.deleteDialog.confirm')
+      }
       destructive
     />
   )

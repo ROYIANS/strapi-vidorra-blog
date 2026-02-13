@@ -1,4 +1,5 @@
 import { type ColumnDef } from '@tanstack/react-table'
+import { t } from '@/i18n'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -18,7 +19,7 @@ export const usersColumns: ColumnDef<User>[] = [
           (table.getIsSomePageRowsSelected() && 'indeterminate')
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label='Select all'
+        aria-label={t('users.table.selectAll')}
         className='translate-y-[2px]'
       />
     ),
@@ -29,7 +30,7 @@ export const usersColumns: ColumnDef<User>[] = [
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label='Select row'
+        aria-label={t('users.table.selectRow')}
         className='translate-y-[2px]'
       />
     ),
@@ -39,7 +40,7 @@ export const usersColumns: ColumnDef<User>[] = [
   {
     accessorKey: 'username',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Username' />
+      <DataTableColumnHeader column={column} title={t('users.table.username')} />
     ),
     cell: ({ row }) => (
       <LongText className='max-w-36 ps-3'>{row.getValue('username')}</LongText>
@@ -55,17 +56,21 @@ export const usersColumns: ColumnDef<User>[] = [
   {
     id: 'fullName',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Name' />
+      <DataTableColumnHeader column={column} title={t('users.table.name')} />
     ),
     cell: ({ row }) => {
-      return <LongText className='max-w-36'>{row.original.name ?? 'N/A'}</LongText>
+      return (
+        <LongText className='max-w-36'>
+          {row.original.name ?? t('users.table.notAvailable')}
+        </LongText>
+      )
     },
     meta: { className: 'w-36' },
   },
   {
     accessorKey: 'email',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Email' />
+      <DataTableColumnHeader column={column} title={t('users.table.email')} />
     ),
     cell: ({ row }) => (
       <div className='w-fit ps-2 text-nowrap'>{row.getValue('email')}</div>
@@ -75,7 +80,7 @@ export const usersColumns: ColumnDef<User>[] = [
     id: 'status',
     accessorFn: (row) => (row.isActive ? 'active' : 'inactive'),
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Status' />
+      <DataTableColumnHeader column={column} title={t('users.table.status')} />
     ),
     cell: ({ row }) => {
       const status = row.getValue('status') as UserStatus
@@ -83,7 +88,9 @@ export const usersColumns: ColumnDef<User>[] = [
       return (
         <div className='flex space-x-2'>
           <Badge variant='outline' className={cn('capitalize', badgeColor)}>
-            {status}
+            {status === 'active'
+              ? t('users.statusValue.active')
+              : t('users.statusValue.inactive')}
           </Badge>
         </div>
       )
@@ -97,7 +104,7 @@ export const usersColumns: ColumnDef<User>[] = [
   {
     accessorKey: 'role',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Role' />
+      <DataTableColumnHeader column={column} title={t('users.table.role')} />
     ),
     cell: ({ row }) => {
       const { role } = row.original
@@ -112,7 +119,7 @@ export const usersColumns: ColumnDef<User>[] = [
           {userType.icon && (
             <userType.icon size={16} className='text-muted-foreground' />
           )}
-          <span className='text-sm capitalize'>{row.getValue('role')}</span>
+          <span className='text-sm'>{userType.label}</span>
         </div>
       )
     },

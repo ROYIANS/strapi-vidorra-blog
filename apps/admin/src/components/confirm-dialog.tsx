@@ -1,3 +1,4 @@
+import { t } from '@/i18n'
 import { cn } from '@/lib/utils'
 import {
   AlertDialog,
@@ -51,14 +52,14 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
         {children}
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isLoading}>
-            {cancelBtnText ?? 'Cancel'}
+            {cancelBtnText ?? t('common.cancel')}
           </AlertDialogCancel>
           <Button
             variant={destructive ? 'destructive' : 'default'}
             onClick={handleConfirm}
             disabled={disabled || isLoading}
           >
-            {confirmText ?? 'Continue'}
+            {confirmText ?? t('common.continue')}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

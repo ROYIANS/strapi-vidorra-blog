@@ -17,7 +17,6 @@ model User {
   clerkId   String?  @unique
   email     String   @unique
   username  String   @unique
-  password  String
   name      String?
   avatar    String?
   bio       String?

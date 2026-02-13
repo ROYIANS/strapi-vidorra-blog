@@ -99,8 +99,6 @@ export class AuthService {
           username,
           name,
           avatar,
-          // Local password is no longer used after Clerk migration.
-          password: `CLERK_AUTH_ONLY_${clerkId}`,
           role: usersCount === 0 ? 'ADMIN' : 'USER',
         },
         select: USER_SELECT,

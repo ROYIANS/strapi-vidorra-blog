@@ -1,5 +1,7 @@
 import { Link } from '@tanstack/react-router'
+import { t } from '@/i18n'
 import useDialogState from '@/hooks/use-dialog-state'
+import { SignOutDialog } from '@/components/sign-out-dialog'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -12,7 +14,6 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { SignOutDialog } from '@/components/sign-out-dialog'
 
 export function ProfileDropdown() {
   const [open, setOpen] = useDialogState()
@@ -23,7 +24,7 @@ export function ProfileDropdown() {
         <DropdownMenuTrigger asChild>
           <Button variant='ghost' className='relative h-8 w-8 rounded-full'>
             <Avatar className='h-8 w-8'>
-              <AvatarImage src='/avatars/01.png' alt='@shadcn' />
+              <AvatarImage src='/avatars/01.png' alt='profile-avatar' />
               <AvatarFallback>SN</AvatarFallback>
             </Avatar>
           </Button>
@@ -41,28 +42,28 @@ export function ProfileDropdown() {
           <DropdownMenuGroup>
             <DropdownMenuItem asChild>
               <Link to='/'>
-                Profile
-                <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                {t('nav.profile')}
+                <DropdownMenuShortcut>Ctrl+P</DropdownMenuShortcut>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link to='/users'>
-                Users
-                <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
+                {t('nav.users')}
+                <DropdownMenuShortcut>Ctrl+U</DropdownMenuShortcut>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link to='/'>
-                Dashboard
-                <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+                {t('nav.dashboard')}
+                <DropdownMenuShortcut>Ctrl+D</DropdownMenuShortcut>
               </Link>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem variant='destructive' onClick={() => setOpen(true)}>
-            Sign out
+            {t('nav.signOut')}
             <DropdownMenuShortcut className='text-current'>
-              ⇧⌘Q
+              Ctrl+Q
             </DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuContent>

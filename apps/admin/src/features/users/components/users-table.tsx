@@ -10,6 +10,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import { t } from '@/i18n'
 import { cn } from '@/lib/utils'
 import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
 import {
@@ -115,20 +116,20 @@ export function UsersTable({
     >
       <DataTableToolbar
         table={table}
-        searchPlaceholder='Filter users...'
+        searchPlaceholder={t('users.table.filterPlaceholder')}
         searchKey='username'
         filters={[
           {
             columnId: 'status',
-            title: 'Status',
+            title: t('users.table.status'),
             options: [
-              { label: 'Active', value: 'active' },
-              { label: 'Inactive', value: 'inactive' },
+              { label: t('users.table.active'), value: 'active' },
+              { label: t('users.table.inactive'), value: 'inactive' },
             ],
           },
           {
             columnId: 'role',
-            title: 'Role',
+            title: t('users.table.role'),
             options: roles.map((role) => ({ ...role })),
           },
         ]}
@@ -202,7 +203,7 @@ export function UsersTable({
                   colSpan={columns.length}
                   className='h-24 text-center'
                 >
-                  No results.
+                  {t('users.table.noResults')}
                 </TableCell>
               </TableRow>
             )}

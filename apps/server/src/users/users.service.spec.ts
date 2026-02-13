@@ -7,9 +7,7 @@ describe('UsersService', () => {
   let service: UsersService;
   let prisma: {
     user: {
-      findFirst: jest.Mock;
       findUnique: jest.Mock;
-      create: jest.Mock;
       findMany: jest.Mock;
       count: jest.Mock;
       update: jest.Mock;
@@ -20,9 +18,7 @@ describe('UsersService', () => {
   beforeEach(async () => {
     prisma = {
       user: {
-        findFirst: jest.fn(),
         findUnique: jest.fn(),
-        create: jest.fn(),
         findMany: jest.fn(),
         count: jest.fn(),
         update: jest.fn(),

@@ -1,5 +1,6 @@
 import { useLayout } from '@/context/layout-provider'
 import { useUser } from '@clerk/clerk-react'
+import { t } from '@/i18n'
 import {
   Sidebar,
   SidebarContent,
@@ -17,7 +18,7 @@ export function AppSidebar() {
   const { user } = useUser()
   const { collapsible, variant } = useLayout()
   const sidebarUser = {
-    name: user?.fullName ?? user?.username ?? 'Guest',
+    name: user?.fullName ?? user?.username ?? t('auth.guest'),
     email: user?.primaryEmailAddress?.emailAddress ?? '',
     avatar: user?.imageUrl ?? '',
   }

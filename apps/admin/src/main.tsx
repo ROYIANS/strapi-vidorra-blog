@@ -2,6 +2,7 @@ import { StrictMode, useEffect } from 'react'
 import ReactDOM from 'react-dom/client'
 import { AxiosError } from 'axios'
 import { ClerkProvider, useAuth } from '@clerk/clerk-react'
+import { zhCN } from '@clerk/localizations'
 import {
   QueryCache,
   QueryClient,
@@ -10,6 +11,7 @@ import {
 } from '@tanstack/react-query'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { toast } from 'sonner'
+import { t } from '@/i18n'
 import { setAccessTokenProvider } from '@/lib/api-client'
 import { handleServerError } from '@/lib/handle-server-error'
 import { DirectionProvider } from './context/direction-provider'
@@ -64,7 +66,7 @@ const queryClient = new QueryClient({
 
         if (error instanceof AxiosError) {
           if (error.response?.status === 304) {
-            toast.error('Content not modified!')
+            toast.error(t('app.contentNotModified'))
           }
         }
       },
@@ -76,10 +78,10 @@ const queryClient = new QueryClient({
         if (error.response?.status === 401) {
           // For Clerk auth, a transient 401 may occur before token bridge is ready.
           // Avoid forcing a sign-in redirect loop and let queries retry/refetch.
-          toast.error('Unauthorized request, retrying...')
+          toast.error(t('app.unauthorizedRetrying'))
         }
         if (error.response?.status === 500) {
-          toast.error('Internal Server Error!')
+          toast.error(t('app.internalServerError'))
         }
       }
     },
@@ -111,6 +113,7 @@ if (!rootElement.innerHTML) {
         {PUBLISHABLE_KEY ? (
           <ClerkProvider
             publishableKey={PUBLISHABLE_KEY}
+            localization={zhCN}
             afterSignOutUrl='/sign-in'
             signInUrl='/sign-in'
             signUpUrl='/sign-up'
@@ -128,7 +131,7 @@ if (!rootElement.innerHTML) {
           </ClerkProvider>
         ) : (
           <div style={{ padding: '16px', color: 'crimson' }}>
-            Missing VITE_CLERK_PUBLISHABLE_KEY in `.env`
+            {t('app.missingClerkKey')}
           </div>
         )}
       </QueryClientProvider>
