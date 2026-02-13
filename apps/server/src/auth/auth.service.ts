@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, Role } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
 interface ClerkJwtPayload {
@@ -60,17 +60,53 @@ export class AuthService {
         existingByClerkId.name ??
         this.getUpdatedName(payload, updatedUsername, existingByClerkId.name);
       const updatedAvatar = existingByClerkId.avatar ?? avatar ?? null;
+      const shouldResolveEmailCollision =
+        Boolean(payload.email) && updatedEmail !== existingByClerkId.email;
 
-      return this.prisma.user.update({
-        where: { id: existingByClerkId.id },
-        data: {
-          email: updatedEmail,
-          username: updatedUsername,
-          name: updatedName,
-          avatar: updatedAvatar,
-        },
-        select: USER_SELECT,
-      });
+      if (shouldResolveEmailCollision) {
+        const existingByEmail = await this.prisma.user.findUnique({
+          where: { email: updatedEmail },
+          select: {
+            id: true,
+            role: true,
+            name: true,
+            avatar: true,
+          },
+        });
+
+        if (existingByEmail && existingByEmail.id !== existingByClerkId.id) {
+          return this.mergeDuplicateUsers({
+            sourceUserId: existingByClerkId.id,
+            sourceUserRole: existingByClerkId.role,
+            targetUserId: existingByEmail.id,
+            targetUserRole: existingByEmail.role,
+            targetUserName: existingByEmail.name,
+            targetUserAvatar: existingByEmail.avatar,
+            clerkId,
+            username: updatedUsername,
+            name: updatedName,
+            avatar: updatedAvatar,
+          });
+        }
+      }
+
+      try {
+        return await this.prisma.user.update({
+          where: { id: existingByClerkId.id },
+          data: {
+            email: updatedEmail,
+            username: updatedUsername,
+            name: updatedName,
+            avatar: updatedAvatar,
+          },
+          select: USER_SELECT,
+        });
+      } catch (error: unknown) {
+        if (!hasRetried && this.isUniqueConstraintError(error)) {
+          return this.syncClerkUser(payload, true);
+        }
+        throw error;
+      }
     }
 
     const existingByEmail = await this.prisma.user.findUnique({
@@ -187,5 +223,59 @@ export class AuthService {
   private sanitizeOptionalText(value: string) {
     const trimmed = value.trim();
     return trimmed.length === 0 ? null : trimmed;
+  }
+
+  private async mergeDuplicateUsers(params: {
+    sourceUserId: string;
+    sourceUserRole: Role;
+    targetUserId: string;
+    targetUserRole: Role;
+    targetUserName: string | null;
+    targetUserAvatar: string | null;
+    clerkId: string;
+    username: string;
+    name: string | null;
+    avatar: string | null;
+  }): Promise<SyncedUser> {
+    const mergedRole = this.getHigherRole(params.sourceUserRole, params.targetUserRole);
+
+    return this.prisma.$transaction(async tx => {
+      await tx.post.updateMany({
+        where: { authorId: params.sourceUserId },
+        data: { authorId: params.targetUserId },
+      });
+
+      await tx.mood.updateMany({
+        where: { userId: params.sourceUserId },
+        data: { userId: params.targetUserId },
+      });
+
+      const updated = await tx.user.update({
+        where: { id: params.targetUserId },
+        data: {
+          clerkId: params.clerkId,
+          username: params.username,
+          name: params.targetUserName ?? params.name,
+          avatar: params.targetUserAvatar ?? params.avatar,
+          role: mergedRole,
+        },
+        select: USER_SELECT,
+      });
+
+      await tx.user.delete({
+        where: { id: params.sourceUserId },
+      });
+
+      return updated;
+    });
+  }
+
+  private getHigherRole(first: Role, second: Role): Role {
+    const rank: Record<Role, number> = {
+      READER: 1,
+      EDITOR: 2,
+      ADMIN: 3,
+    };
+    return rank[first] >= rank[second] ? first : second;
   }
 }

@@ -5,25 +5,42 @@ import { PrismaService } from '../prisma/prisma.service';
 describe('AuthService', () => {
   let service: AuthService;
   let prisma: {
+    $transaction: jest.Mock;
+    post: {
+      updateMany: jest.Mock;
+    };
+    mood: {
+      updateMany: jest.Mock;
+    };
     user: {
       findUnique: jest.Mock;
       create: jest.Mock;
       update: jest.Mock;
       count: jest.Mock;
+      delete: jest.Mock;
       deleteMany: jest.Mock;
     };
   };
 
   beforeEach(async () => {
     prisma = {
+      $transaction: jest.fn(),
+      post: {
+        updateMany: jest.fn(),
+      },
+      mood: {
+        updateMany: jest.fn(),
+      },
       user: {
         findUnique: jest.fn(),
         create: jest.fn(),
         update: jest.fn(),
         count: jest.fn(),
+        delete: jest.fn(),
         deleteMany: jest.fn(),
       },
     };
+    prisma.$transaction.mockImplementation(async (cb: (tx: typeof prisma) => unknown) => cb(prisma));
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -50,6 +67,7 @@ describe('AuthService', () => {
         role: 'ADMIN',
         avatar: null,
       })
+      .mockResolvedValueOnce(null);
     prisma.user.update.mockResolvedValue({
       id: 'db-id-1',
       clerkId: 'user_abc',
@@ -97,6 +115,85 @@ describe('AuthService', () => {
       bio: 'Existing bio',
       role: 'ADMIN',
       avatar: 'https://example.com/a.png',
+    });
+  });
+
+  it('merges fallback user into existing email user when clerk email becomes available', async () => {
+    prisma.user.findUnique
+      .mockResolvedValueOnce({
+        id: 'fallback-id',
+        clerkId: 'user_clerk',
+        email: 'user_clerk@clerk.local',
+        username: 'clerk_user_clerk',
+        name: 'clerk_user_clerk',
+        bio: null,
+        role: 'READER',
+        avatar: null,
+      })
+      .mockResolvedValueOnce({
+        id: 'existing-id',
+        role: 'ADMIN',
+        name: 'Royians',
+        avatar: null,
+      });
+    prisma.user.update.mockResolvedValueOnce({
+      id: 'existing-id',
+      clerkId: 'user_clerk',
+      email: '1294686101@qq.com',
+      username: 'royians',
+      name: 'Royians',
+      bio: null,
+      role: 'ADMIN',
+      avatar: null,
+    });
+
+    const result = await service.validateClerkUser({
+      sub: 'user_clerk',
+      email: '1294686101@qq.com',
+      username: 'royians',
+      name: 'Royians',
+    });
+
+    expect(prisma.post.updateMany).toHaveBeenCalledWith({
+      where: { authorId: 'fallback-id' },
+      data: { authorId: 'existing-id' },
+    });
+    expect(prisma.mood.updateMany).toHaveBeenCalledWith({
+      where: { userId: 'fallback-id' },
+      data: { userId: 'existing-id' },
+    });
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { id: 'existing-id' },
+      data: {
+        clerkId: 'user_clerk',
+        username: 'royians',
+        name: 'Royians',
+        avatar: null,
+        role: 'ADMIN',
+      },
+      select: {
+        id: true,
+        clerkId: true,
+        email: true,
+        username: true,
+        name: true,
+        bio: true,
+        role: true,
+        avatar: true,
+      },
+    });
+    expect(prisma.user.delete).toHaveBeenCalledWith({
+      where: { id: 'fallback-id' },
+    });
+    expect(result).toEqual({
+      id: 'existing-id',
+      clerkId: 'user_clerk',
+      email: '1294686101@qq.com',
+      username: 'royians',
+      name: 'Royians',
+      bio: null,
+      role: 'ADMIN',
+      avatar: null,
     });
   });
 
