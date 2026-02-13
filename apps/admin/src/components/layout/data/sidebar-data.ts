@@ -4,6 +4,7 @@ import {
   Command,
 } from 'lucide-react'
 import { t } from '@/i18n'
+import { PERMISSIONS } from '@/lib/permissions'
 import { type SidebarData } from '../types'
 
 export const sidebarData: SidebarData = {
@@ -22,11 +23,13 @@ export const sidebarData: SidebarData = {
           title: t('nav.dashboard'),
           url: '/',
           icon: LayoutDashboard,
+          permissions: [PERMISSIONS.DASHBOARD_VIEW],
         },
         {
           title: t('nav.users'),
           url: '/users',
           icon: Users,
+          permissions: [PERMISSIONS.USERS_VIEW],
         },
       ],
     },

@@ -146,9 +146,9 @@ export const zhCN = {
       inactive: '停用',
     },
     roleValue: {
-      USER: '普通用户',
-      ADMIN: '管理员',
+      READER: '普通读者',
       EDITOR: '编辑',
+      ADMIN: '管理员',
     },
   },
   dataTable: {

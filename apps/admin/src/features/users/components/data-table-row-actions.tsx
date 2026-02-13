@@ -4,6 +4,7 @@ import { Trash2, UserPen } from 'lucide-react'
 import { t } from '@/i18n'
 import { Button } from '@/components/ui/button'
 import { useAuthProfile } from '@/hooks/use-auth-profile'
+import { PERMISSIONS } from '@/lib/permissions'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,12 +23,15 @@ type DataTableRowActionsProps = {
 export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   const { setOpen, setCurrentRow } = useUsers()
   const { data: currentUser } = useAuthProfile()
+  const granted = currentUser?.permissions ?? []
+  const canUpdateUser = granted.includes(PERMISSIONS.USERS_UPDATE)
+  const canDeleteUser = granted.includes(PERMISSIONS.USERS_DELETE)
 
-  if (currentUser?.role !== 'ADMIN') {
+  if (!canUpdateUser && !canDeleteUser) {
     return null
   }
 
-  const isSelfRow = currentUser.id === row.original.id
+  const isSelfRow = currentUser?.id === row.original.id
 
   return (
     <>
@@ -42,32 +46,36 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-[160px]'>
-          <DropdownMenuItem
-            onClick={() => {
-              setCurrentRow(row.original)
-              setOpen('edit')
-            }}
-          >
-            {t('users.actions.edit')}
-            <DropdownMenuShortcut>
-              <UserPen size={16} />
-            </DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={() => {
-              if (isSelfRow) return
-              setCurrentRow(row.original)
-              setOpen('delete')
-            }}
-            disabled={isSelfRow}
-            className='text-red-500!'
-          >
-            {t('users.actions.delete')}
-            <DropdownMenuShortcut>
-              <Trash2 size={16} />
-            </DropdownMenuShortcut>
-          </DropdownMenuItem>
+          {canUpdateUser && (
+            <DropdownMenuItem
+              onClick={() => {
+                setCurrentRow(row.original)
+                setOpen('edit')
+              }}
+            >
+              {t('users.actions.edit')}
+              <DropdownMenuShortcut>
+                <UserPen size={16} />
+              </DropdownMenuShortcut>
+            </DropdownMenuItem>
+          )}
+          {canUpdateUser && canDeleteUser && <DropdownMenuSeparator />}
+          {canDeleteUser && (
+            <DropdownMenuItem
+              onClick={() => {
+                if (isSelfRow) return
+                setCurrentRow(row.original)
+                setOpen('delete')
+              }}
+              disabled={isSelfRow}
+              className='text-red-500!'
+            >
+              {t('users.actions.delete')}
+              <DropdownMenuShortcut>
+                <Trash2 size={16} />
+              </DropdownMenuShortcut>
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     </>

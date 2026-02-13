@@ -1,8 +1,9 @@
 import { apiClient } from '@/lib/api-client'
+import type { Role } from '@/lib/permissions'
 import type { User } from './auth.service'
 
 export interface UpdateUserRequest {
-  role?: 'USER' | 'ADMIN' | 'EDITOR'
+  role?: Role
   isActive?: boolean
 }
 

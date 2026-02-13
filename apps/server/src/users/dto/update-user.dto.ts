@@ -1,9 +1,9 @@
 import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
 
 export class UpdateUserDto {
-  @IsEnum(['USER', 'ADMIN', 'EDITOR'])
+  @IsEnum(['READER', 'EDITOR', 'ADMIN'])
   @IsOptional()
-  role?: 'USER' | 'ADMIN' | 'EDITOR';
+  role?: 'READER' | 'EDITOR' | 'ADMIN';
 
   @IsBoolean()
   @IsOptional()

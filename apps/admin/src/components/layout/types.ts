@@ -1,4 +1,5 @@
 import { type LinkProps } from '@tanstack/react-router'
+import type { Permission } from '@/lib/permissions'
 
 type User = {
   name: string
@@ -16,6 +17,7 @@ type BaseNavItem = {
   title: string
   badge?: string
   icon?: React.ElementType
+  permissions?: Permission[]
 }
 
 type NavLink = BaseNavItem & {

@@ -1,6 +1,8 @@
+import { useMemo } from 'react'
 import { useLayout } from '@/context/layout-provider'
 import { useUser } from '@clerk/clerk-react'
 import { t } from '@/i18n'
+import { useAuthProfile } from '@/hooks/use-auth-profile'
 import {
   Sidebar,
   SidebarContent,
@@ -9,6 +11,7 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar'
 // import { AppTitle } from './app-title'
+import { filterNavGroupsByPermissions } from './data/filter-nav-by-permissions'
 import { sidebarData } from './data/sidebar-data'
 import { NavGroup } from './nav-group'
 import { NavUser } from './nav-user'
@@ -16,7 +19,18 @@ import { TeamSwitcher } from './team-switcher'
 
 export function AppSidebar() {
   const { user } = useUser()
+  const { data: authProfile } = useAuthProfile()
   const { collapsible, variant } = useLayout()
+
+  const navGroups = useMemo(
+    () =>
+      filterNavGroupsByPermissions(
+        sidebarData.navGroups,
+        authProfile?.permissions ?? []
+      ),
+    [authProfile?.permissions]
+  )
+
   const sidebarUser = {
     name: user?.fullName ?? user?.username ?? t('auth.guest'),
     email: user?.primaryEmailAddress?.emailAddress ?? '',
@@ -33,7 +47,7 @@ export function AppSidebar() {
         {/* <AppTitle /> */}
       </SidebarHeader>
       <SidebarContent>
-        {sidebarData.navGroups.map((props) => (
+        {navGroups.map((props) => (
           <NavGroup key={props.title} {...props} />
         ))}
       </SidebarContent>

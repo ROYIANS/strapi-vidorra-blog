@@ -4,10 +4,15 @@ import { t } from '@/i18n'
 import { usersService } from '@/services/users.service'
 import type { UpdateUserRequest } from '@/services/users.service'
 
-export function useUsers(page = 1, limit = 10) {
+type UseUsersOptions = {
+  enabled?: boolean
+}
+
+export function useUsers(page = 1, limit = 10, options?: UseUsersOptions) {
   return useQuery({
     queryKey: ['users', page, limit],
     queryFn: () => usersService.getUsers(page, limit),
+    enabled: options?.enabled ?? true,
   })
 }
 

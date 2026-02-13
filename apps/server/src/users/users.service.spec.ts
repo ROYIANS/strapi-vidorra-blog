@@ -75,7 +75,7 @@ describe('UsersService', () => {
     prisma.user.count.mockResolvedValue(1);
 
     await expect(
-      service.update('user_2', { role: 'USER' }, 'user_1'),
+      service.update('user_2', { role: 'EDITOR' }, 'user_1'),
     ).rejects.toBeInstanceOf(ConflictException);
     expect(prisma.user.update).not.toHaveBeenCalled();
   });

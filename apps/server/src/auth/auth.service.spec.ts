@@ -107,7 +107,7 @@ describe('AuthService', () => {
       email: 'legacy@example.com',
       username: 'legacy',
       name: 'Legacy User',
-      role: 'USER',
+      role: 'EDITOR',
       avatar: null,
     });
 
@@ -142,7 +142,7 @@ describe('AuthService', () => {
       email: 'legacy@example.com',
       username: 'legacy',
       name: 'Legacy User',
-      role: 'USER',
+      role: 'EDITOR',
       avatar: null,
     });
   });
@@ -204,7 +204,7 @@ describe('AuthService', () => {
       email: 'user_missing_claims@clerk.local',
       username: 'clerk_user_missing_claims',
       name: 'clerk_user_missing_claims',
-      role: 'USER',
+      role: 'READER',
       avatar: null,
     });
 
@@ -217,7 +217,7 @@ describe('AuthService', () => {
         clerkId: 'user_missing_claims',
         email: 'user_missing_claims@clerk.local',
         username: 'clerk_user_missing_claims',
-        role: 'USER',
+        role: 'READER',
       }),
       select: {
         id: true,
@@ -249,7 +249,7 @@ describe('AuthService', () => {
         email: 'race@example.com',
         username: 'race_user',
         name: 'Race User',
-        role: 'USER',
+        role: 'EDITOR',
         avatar: null,
       });
     prisma.user.count.mockResolvedValueOnce(2);
@@ -262,7 +262,7 @@ describe('AuthService', () => {
       email: 'race@example.com',
       username: 'race_user',
       name: 'Race User',
-      role: 'USER',
+      role: 'EDITOR',
       avatar: null,
     });
 
@@ -298,7 +298,7 @@ describe('AuthService', () => {
       email: 'race@example.com',
       username: 'race_user',
       name: 'Race User',
-      role: 'USER',
+      role: 'EDITOR',
       avatar: null,
     });
   });

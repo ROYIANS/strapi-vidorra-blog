@@ -6,7 +6,9 @@ import {
   Users,
 } from 'lucide-react'
 import { t } from '@/i18n'
+import { useAuthProfile } from '@/hooks/use-auth-profile'
 import useDialogState from '@/hooks/use-dialog-state'
+import { PERMISSIONS } from '@/lib/permissions'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -36,6 +38,10 @@ type NavUserProps = {
 export function NavUser({ user }: NavUserProps) {
   const { isMobile } = useSidebar()
   const [open, setOpen] = useDialogState()
+  const { data: authProfile } = useAuthProfile()
+  const canViewUsers = (authProfile?.permissions ?? []).includes(
+    PERMISSIONS.USERS_VIEW
+  )
 
   return (
     <>
@@ -84,12 +90,14 @@ export function NavUser({ user }: NavUserProps) {
                     {t('nav.dashboard')}
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to='/users'>
-                    <Users />
-                    {t('nav.users')}
-                  </Link>
-                </DropdownMenuItem>
+                {canViewUsers && (
+                  <DropdownMenuItem asChild>
+                    <Link to='/users'>
+                      <Users />
+                      {t('nav.users')}
+                    </Link>
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem

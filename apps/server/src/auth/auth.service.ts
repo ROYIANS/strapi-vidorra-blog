@@ -99,7 +99,7 @@ export class AuthService {
           username,
           name,
           avatar,
-          role: usersCount === 0 ? 'ADMIN' : 'USER',
+          role: usersCount === 0 ? 'ADMIN' : 'READER',
         },
         select: USER_SELECT,
       });

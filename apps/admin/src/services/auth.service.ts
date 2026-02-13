@@ -1,4 +1,5 @@
 import { apiClient } from '@/lib/api-client'
+import type { Permission, Role } from '@/lib/permissions'
 
 export interface User {
   id: string
@@ -7,7 +8,7 @@ export interface User {
   name: string | null
   avatar: string | null
   bio: string | null
-  role: 'USER' | 'ADMIN' | 'EDITOR'
+  role: Role
   isActive: boolean
   createdAt: string
   updatedAt: string
@@ -20,7 +21,8 @@ export interface AuthProfile {
   username: string
   name: string | null
   avatar: string | null
-  role: 'USER' | 'ADMIN' | 'EDITOR'
+  role: Role
+  permissions: Permission[]
 }
 
 export const authService = {

@@ -12,6 +12,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { useAuthProfile } from '@/hooks/use-auth-profile'
+import { PERMISSIONS } from '@/lib/permissions'
 import { usersService } from '@/services/users.service'
 import { type User } from '../data/schema'
 import { UsersMultiDeleteDialog } from './users-multi-delete-dialog'
@@ -29,9 +30,12 @@ export function DataTableBulkActions<TData>({
   )
   const queryClient = useQueryClient()
   const { data: currentUser } = useAuthProfile()
+  const granted = currentUser?.permissions ?? []
+  const canUpdateUser = granted.includes(PERMISSIONS.USERS_UPDATE)
+  const canDeleteUser = granted.includes(PERMISSIONS.USERS_DELETE)
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
-  if (currentUser?.role !== 'ADMIN') {
+  if (!canUpdateUser && !canDeleteUser) {
     return null
   }
 
@@ -71,65 +75,71 @@ export function DataTableBulkActions<TData>({
   return (
     <>
       <BulkActionsToolbar table={table} entityName={t('users.entityName')}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant='outline'
-              size='icon'
-              onClick={() => handleBulkStatusChange('active')}
-              className='size-8'
-              aria-label={t('users.bulk.activateSelected')}
-              title={t('users.bulk.activateSelected')}
-              disabled={updatingStatus !== null}
-            >
-              <UserCheck />
-              <span className='sr-only'>{t('users.bulk.activateSelected')}</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{t('users.bulk.activateSelected')}</p>
-          </TooltipContent>
-        </Tooltip>
+        {canUpdateUser && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant='outline'
+                size='icon'
+                onClick={() => handleBulkStatusChange('active')}
+                className='size-8'
+                aria-label={t('users.bulk.activateSelected')}
+                title={t('users.bulk.activateSelected')}
+                disabled={updatingStatus !== null}
+              >
+                <UserCheck />
+                <span className='sr-only'>{t('users.bulk.activateSelected')}</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{t('users.bulk.activateSelected')}</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant='outline'
-              size='icon'
-              onClick={() => handleBulkStatusChange('inactive')}
-              className='size-8'
-              aria-label={t('users.bulk.deactivateSelected')}
-              title={t('users.bulk.deactivateSelected')}
-              disabled={updatingStatus !== null}
-            >
-              <UserX />
-              <span className='sr-only'>{t('users.bulk.deactivateSelected')}</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{t('users.bulk.deactivateSelected')}</p>
-          </TooltipContent>
-        </Tooltip>
+        {canUpdateUser && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant='outline'
+                size='icon'
+                onClick={() => handleBulkStatusChange('inactive')}
+                className='size-8'
+                aria-label={t('users.bulk.deactivateSelected')}
+                title={t('users.bulk.deactivateSelected')}
+                disabled={updatingStatus !== null}
+              >
+                <UserX />
+                <span className='sr-only'>{t('users.bulk.deactivateSelected')}</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{t('users.bulk.deactivateSelected')}</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant='destructive'
-              size='icon'
-              onClick={() => setShowDeleteConfirm(true)}
-              className='size-8'
-              aria-label={t('users.bulk.deleteSelected')}
-              title={t('users.bulk.deleteSelected')}
-              disabled={updatingStatus !== null}
-            >
-              <Trash2 />
-              <span className='sr-only'>{t('users.bulk.deleteSelected')}</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{t('users.bulk.deleteSelected')}</p>
-          </TooltipContent>
-        </Tooltip>
+        {canDeleteUser && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant='destructive'
+                size='icon'
+                onClick={() => setShowDeleteConfirm(true)}
+                className='size-8'
+                aria-label={t('users.bulk.deleteSelected')}
+                title={t('users.bulk.deleteSelected')}
+                disabled={updatingStatus !== null}
+              >
+                <Trash2 />
+                <span className='sr-only'>{t('users.bulk.deleteSelected')}</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{t('users.bulk.deleteSelected')}</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
       </BulkActionsToolbar>
 
       <UsersMultiDeleteDialog

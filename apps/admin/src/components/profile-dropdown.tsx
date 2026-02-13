@@ -1,6 +1,8 @@
 import { Link } from '@tanstack/react-router'
 import { t } from '@/i18n'
+import { useAuthProfile } from '@/hooks/use-auth-profile'
 import useDialogState from '@/hooks/use-dialog-state'
+import { PERMISSIONS } from '@/lib/permissions'
 import { SignOutDialog } from '@/components/sign-out-dialog'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -17,6 +19,10 @@ import {
 
 export function ProfileDropdown() {
   const [open, setOpen] = useDialogState()
+  const { data: authProfile } = useAuthProfile()
+  const canViewUsers = (authProfile?.permissions ?? []).includes(
+    PERMISSIONS.USERS_VIEW
+  )
 
   return (
     <>
@@ -46,12 +52,14 @@ export function ProfileDropdown() {
                 <DropdownMenuShortcut>Ctrl+P</DropdownMenuShortcut>
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link to='/users'>
-                {t('nav.users')}
-                <DropdownMenuShortcut>Ctrl+U</DropdownMenuShortcut>
-              </Link>
-            </DropdownMenuItem>
+            {canViewUsers && (
+              <DropdownMenuItem asChild>
+                <Link to='/users'>
+                  {t('nav.users')}
+                  <DropdownMenuShortcut>Ctrl+U</DropdownMenuShortcut>
+                </Link>
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem asChild>
               <Link to='/'>
                 {t('nav.dashboard')}

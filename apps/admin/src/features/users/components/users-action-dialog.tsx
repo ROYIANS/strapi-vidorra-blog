@@ -31,9 +31,9 @@ import { roles } from '../data/data'
 import { type User } from '../data/schema'
 
 const userRoleSchema = z.union([
-  z.literal('USER'),
-  z.literal('ADMIN'),
+  z.literal('READER'),
   z.literal('EDITOR'),
+  z.literal('ADMIN'),
 ])
 
 const formSchema = z.object({
@@ -67,7 +67,7 @@ export function UsersActionDialog({
     resolver: zodResolver(formSchema),
     defaultValues: currentRow
       ? buildDefaultValues(currentRow)
-      : { role: 'USER', isActive: true },
+      : { role: 'READER', isActive: true },
   })
 
   useEffect(() => {

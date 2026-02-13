@@ -12,7 +12,7 @@ export const users = Array.from({ length: 500 }, () => {
     name,
     avatar: faker.image.avatar(),
     bio: faker.helpers.maybe(() => faker.person.bio(), { probability: 0.7 }) ?? null,
-    role: faker.helpers.arrayElement(['USER', 'ADMIN', 'EDITOR']),
+    role: faker.helpers.arrayElement(['READER', 'ADMIN', 'EDITOR']),
     isActive: faker.datatype.boolean(),
     createdAt: faker.date.past().toISOString(),
     updatedAt: faker.date.recent().toISOString(),

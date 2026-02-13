@@ -11,29 +11,30 @@ import {
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../common/guards/roles.guard';
-import { Roles } from '../common/decorators/roles.decorator';
+import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { Permissions } from '../common/decorators/permissions.decorator';
+import { PERMISSIONS } from '../common/authz/permissions';
 
 @Controller('users')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, PermissionsGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @Roles('ADMIN', 'EDITOR')
+  @Permissions(PERMISSIONS.USERS_VIEW)
   findAll(@Query('page') page?: number, @Query('limit') limit?: number) {
     return this.usersService.findAll(page, limit);
   }
 
   @Get(':id')
-  @Roles('ADMIN', 'EDITOR')
+  @Permissions(PERMISSIONS.USERS_VIEW)
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
   }
 
   @Patch(':id')
-  @Roles('ADMIN')
+  @Permissions(PERMISSIONS.USERS_UPDATE)
   update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
@@ -43,7 +44,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @Roles('ADMIN')
+  @Permissions(PERMISSIONS.USERS_DELETE)
   remove(@Param('id') id: string, @CurrentUser() user: { id: string }) {
     return this.usersService.remove(id, user.id);
   }
