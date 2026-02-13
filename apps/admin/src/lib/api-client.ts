@@ -1,7 +1,12 @@
-﻿import axios from 'axios'
-import { getCookie } from '@/lib/cookies'
+import axios from 'axios'
 
-const ACCESS_TOKEN = 'thisisjustarandomstring'
+type AccessTokenProvider = (() => Promise<string | null>) | null
+
+let accessTokenProvider: AccessTokenProvider = null
+
+export function setAccessTokenProvider(provider: AccessTokenProvider) {
+  accessTokenProvider = provider
+}
 
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3001/api',
@@ -10,31 +15,21 @@ export const apiClient = axios.create({
   },
 })
 
-// Request interceptor to add auth token
 apiClient.interceptors.request.use(
-  (config) => {
-    const cookieState = getCookie(ACCESS_TOKEN)
-    const token = cookieState ? JSON.parse(cookieState) : null
-
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+  async (config) => {
+    if (accessTokenProvider) {
+      const token = await accessTokenProvider()
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`
+      }
     }
 
     return config
   },
-  (error) => {
-    return Promise.reject(error)
-  }
+  (error) => Promise.reject(error)
 )
 
-// Response interceptor to handle errors
 apiClient.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      // Token expired or invalid, redirect to login
-      window.location.href = '/sign-in'
-    }
-    return Promise.reject(error)
-  }
+  (error) => Promise.reject(error)
 )

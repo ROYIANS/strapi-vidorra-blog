@@ -45,6 +45,7 @@ export class UsersService {
         orderBy: { createdAt: 'desc' },
         select: {
           id: true,
+          clerkId: true,
           email: true,
           username: true,
           name: true,
@@ -75,6 +76,7 @@ export class UsersService {
       where: { id },
       select: {
         id: true,
+        clerkId: true,
         email: true,
         username: true,
         name: true,
@@ -110,6 +112,7 @@ export class UsersService {
       data: updateUserDto,
       select: {
         id: true,
+        clerkId: true,
         email: true,
         username: true,
         name: true,

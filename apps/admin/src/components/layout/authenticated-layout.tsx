@@ -1,4 +1,5 @@
-import { Outlet } from '@tanstack/react-router'
+import { useAuth } from '@clerk/clerk-react'
+import { Navigate, Outlet, useLocation } from '@tanstack/react-router'
 import { getCookie } from '@/lib/cookies'
 import { cn } from '@/lib/utils'
 import { LayoutProvider } from '@/context/layout-provider'
@@ -12,7 +13,24 @@ type AuthenticatedLayoutProps = {
 }
 
 export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
+  const { isLoaded, isSignedIn } = useAuth()
+  const location = useLocation()
   const defaultOpen = getCookie('sidebar_state') !== 'false'
+
+  if (!isLoaded) {
+    return <div className='flex h-svh items-center justify-center'>Loading...</div>
+  }
+
+  if (!isSignedIn) {
+    return (
+      <Navigate
+        to='/sign-in'
+        search={{ redirect: location.href }}
+        replace
+      />
+    )
+  }
+
   return (
     <SearchProvider>
       <LayoutProvider>

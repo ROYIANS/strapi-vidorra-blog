@@ -111,10 +111,10 @@ export function UserAuthForm({
               </FormControl>
               <FormMessage />
               <Link
-                to='/forgot-password'
+                to='/sign-in'
                 className='absolute end-0 -top-0.5 text-sm font-medium text-muted-foreground hover:opacity-75'
               >
-                Forgot password?
+                Need help?
               </Link>
             </FormItem>
           )}

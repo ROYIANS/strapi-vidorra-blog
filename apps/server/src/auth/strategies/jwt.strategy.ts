@@ -10,13 +10,22 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private configService: ConfigService,
     private authService: AuthService,
   ) {
+    const verificationKey = configService
+      .get<string>('CLERK_JWT_VERIFICATION_KEY', '')
+      .replace(/\\n/g, '\n');
+
+    if (!verificationKey) {
+      throw new Error('Missing CLERK_JWT_VERIFICATION_KEY');
+    }
+
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: configService.get<string>('JWT_SECRET') || 'default-secret-key',
+      secretOrKey: verificationKey,
+      algorithms: ['RS256'],
     });
   }
 
   async validate(payload: any) {
-    return this.authService.validateUser(payload.sub);
+    return this.authService.validateClerkUser(payload);
   }
 }

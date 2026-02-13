@@ -1,6 +1,7 @@
-import { StrictMode } from 'react'
+import { StrictMode, useEffect } from 'react'
 import ReactDOM from 'react-dom/client'
 import { AxiosError } from 'axios'
+import { ClerkProvider, useAuth } from '@clerk/clerk-react'
 import {
   QueryCache,
   QueryClient,
@@ -8,7 +9,7 @@ import {
 } from '@tanstack/react-query'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { toast } from 'sonner'
-import { useAuthStore } from '@/stores/auth-store'
+import { setAccessTokenProvider } from '@/lib/api-client'
 import { handleServerError } from '@/lib/handle-server-error'
 import { DirectionProvider } from './context/direction-provider'
 import { FontProvider } from './context/font-provider'
@@ -17,6 +18,24 @@ import { ThemeProvider } from './context/theme-provider'
 import { routeTree } from './routeTree.gen'
 // Styles
 import './styles/index.css'
+
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+
+function ClerkTokenBridge() {
+  const { getToken, isLoaded, isSignedIn } = useAuth()
+
+  useEffect(() => {
+    if (!isLoaded || !isSignedIn) {
+      setAccessTokenProvider(null)
+      return
+    }
+
+    setAccessTokenProvider(async () => getToken())
+    return () => setAccessTokenProvider(null)
+  }, [getToken, isLoaded, isSignedIn])
+
+  return null
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -53,19 +72,11 @@ const queryClient = new QueryClient({
       if (error instanceof AxiosError) {
         if (error.response?.status === 401) {
           toast.error('Session expired!')
-          useAuthStore.getState().auth.reset()
           const redirect = `${router.history.location.href}`
           router.navigate({ to: '/sign-in', search: { redirect } })
         }
         if (error.response?.status === 500) {
           toast.error('Internal Server Error!')
-          // Only navigate to error page in production to avoid disrupting HMR in development
-          if (import.meta.env.PROD) {
-            router.navigate({ to: '/500' })
-          }
-        }
-        if (error.response?.status === 403) {
-          // router.navigate("/forbidden", { replace: true });
         }
       }
     },
@@ -94,13 +105,29 @@ if (!rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider>
-          <FontProvider>
-            <DirectionProvider>
-              <RouterProvider router={router} />
-            </DirectionProvider>
-          </FontProvider>
-        </ThemeProvider>
+        {PUBLISHABLE_KEY ? (
+          <ClerkProvider
+            publishableKey={PUBLISHABLE_KEY}
+            afterSignOutUrl='/sign-in'
+            signInUrl='/sign-in'
+            signUpUrl='/sign-up'
+            signInFallbackRedirectUrl='/'
+            signUpFallbackRedirectUrl='/'
+          >
+            <ThemeProvider>
+              <FontProvider>
+                <DirectionProvider>
+                  <ClerkTokenBridge />
+                  <RouterProvider router={router} />
+                </DirectionProvider>
+              </FontProvider>
+            </ThemeProvider>
+          </ClerkProvider>
+        ) : (
+          <div style={{ padding: '16px', color: 'crimson' }}>
+            Missing VITE_CLERK_PUBLISHABLE_KEY in `.env`
+          </div>
+        )}
       </QueryClientProvider>
     </StrictMode>
   )

@@ -22,8 +22,7 @@ pnpm install
 NODE_ENV=development
 PORT=3001
 DATABASE_URL="postgresql://username:password@localhost:5432/vidorra_blog?schema=public"
-JWT_SECRET=your-super-secret-jwt-key
-JWT_EXPIRES_IN=7d
+CLERK_JWT_VERIFICATION_KEY="-----BEGIN PUBLIC KEY-----\nYOUR_CLERK_RSA_PUBLIC_KEY\n-----END PUBLIC KEY-----"
 CORS_ORIGIN=http://localhost:3000,http://localhost:5173
 ```
 
