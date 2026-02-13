@@ -3,7 +3,7 @@ import {
   getPermissionsForRoles,
   PERMISSIONS,
   ROLES,
-} from './permissions';
+} from '@vidorra/types';
 
 describe('permissions', () => {
   it('exposes stable role constants for cross-app reuse', () => {

@@ -14,7 +14,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { Permissions } from '../common/decorators/permissions.decorator';
-import { PERMISSIONS } from '../common/authz/permissions';
+import { PERMISSIONS } from '@vidorra/types';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard, PermissionsGuard)

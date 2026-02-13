@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { type Role } from '@prisma/client';
-import { type Permission, getPermissionsForRole } from '../authz/permissions';
+import { type Permission, getPermissionsForRole } from '@vidorra/types';
 import { PERMISSIONS_KEY } from '../decorators/permissions.decorator';
 
 @Injectable()
