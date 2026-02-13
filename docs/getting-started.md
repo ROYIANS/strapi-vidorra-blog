@@ -24,6 +24,7 @@ PORT=3001
 DATABASE_URL="postgresql://username:password@localhost:5432/vidorra_blog?schema=public"
 CLERK_JWKS_URL=https://your-instance.clerk.accounts.dev/.well-known/jwks.json
 CLERK_JWT_VERIFICATION_KEY="-----BEGIN PUBLIC KEY-----\nYOUR_CLERK_RSA_PUBLIC_KEY\n-----END PUBLIC KEY-----"
+CLERK_WEBHOOK_SECRET=whsec_xxx
 CORS_ORIGIN=http://localhost:3000,http://localhost:5173
 ```
 
