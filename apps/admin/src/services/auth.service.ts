@@ -25,6 +25,16 @@ export interface User {
   updatedAt: string
 }
 
+export interface AuthProfile {
+  id: string
+  clerkId: string | null
+  email: string
+  username: string
+  name: string | null
+  avatar: string | null
+  role: 'USER' | 'ADMIN' | 'EDITOR'
+}
+
 export interface LoginResponse {
   access_token: string
   user: User
@@ -41,8 +51,8 @@ export const authService = {
     return response.data
   },
 
-  async getProfile(): Promise<User> {
-    const response = await apiClient.get<User>('/auth/profile')
+  async getProfile(): Promise<AuthProfile> {
+    const response = await apiClient.get<AuthProfile>('/auth/profile')
     return response.data
   },
 }

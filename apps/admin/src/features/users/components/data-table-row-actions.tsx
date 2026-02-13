@@ -2,6 +2,7 @@ import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { type Row } from '@tanstack/react-table'
 import { Trash2, UserPen } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useAuthProfile } from '@/hooks/use-auth-profile'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,6 +20,14 @@ type DataTableRowActionsProps = {
 
 export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   const { setOpen, setCurrentRow } = useUsers()
+  const { data: currentUser } = useAuthProfile()
+
+  if (currentUser?.role !== 'ADMIN') {
+    return null
+  }
+
+  const isSelfRow = currentUser.id === row.original.id
+
   return (
     <>
       <DropdownMenu modal={false}>
@@ -46,9 +55,11 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={() => {
+              if (isSelfRow) return
               setCurrentRow(row.original)
               setOpen('delete')
             }}
+            disabled={isSelfRow}
             className='text-red-500!'
           >
             Delete

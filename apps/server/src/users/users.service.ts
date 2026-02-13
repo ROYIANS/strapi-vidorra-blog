@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -96,11 +101,39 @@ export class UsersService {
     return user;
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  async update(id: string, updateUserDto: UpdateUserDto, actorId: string) {
     const user = await this.prisma.user.findUnique({ where: { id } });
 
     if (!user) {
       throw new NotFoundException('User not found');
+    }
+
+    const isSelfAction = actorId === id;
+    if (isSelfAction && updateUserDto.role && updateUserDto.role !== 'ADMIN') {
+      throw new ForbiddenException('You cannot change your own admin role');
+    }
+    if (isSelfAction && updateUserDto.isActive === false) {
+      throw new ForbiddenException('You cannot deactivate your own account');
+    }
+
+    const isDemotingAdmin =
+      user.role === 'ADMIN' &&
+      user.isActive &&
+      updateUserDto.role !== undefined &&
+      updateUserDto.role !== 'ADMIN';
+    const isDeactivatingAdmin =
+      user.role === 'ADMIN' && user.isActive && updateUserDto.isActive === false;
+    if (isDemotingAdmin || isDeactivatingAdmin) {
+      const activeAdminsCount = await this.prisma.user.count({
+        where: {
+          role: 'ADMIN',
+          isActive: true,
+        },
+      });
+
+      if (activeAdminsCount <= 1) {
+        throw new ConflictException('Cannot modify the last active admin');
+      }
     }
 
     if (updateUserDto.password) {
@@ -128,11 +161,28 @@ export class UsersService {
     return updated;
   }
 
-  async remove(id: string) {
+  async remove(id: string, actorId: string) {
     const user = await this.prisma.user.findUnique({ where: { id } });
 
     if (!user) {
       throw new NotFoundException('User not found');
+    }
+
+    if (actorId === id) {
+      throw new ForbiddenException('You cannot delete your own account');
+    }
+
+    if (user.role === 'ADMIN' && user.isActive) {
+      const activeAdminsCount = await this.prisma.user.count({
+        where: {
+          role: 'ADMIN',
+          isActive: true,
+        },
+      });
+
+      if (activeAdminsCount <= 1) {
+        throw new ConflictException('Cannot delete the last active admin');
+      }
     }
 
     await this.prisma.user.delete({ where: { id } });

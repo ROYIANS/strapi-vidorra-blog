@@ -22,6 +22,17 @@ type JwksResponse = {
   keys?: Jwk[];
 };
 
+function normalizePemKey(rawValue: string) {
+  if (!rawValue) return '';
+
+  return rawValue
+    .replace(/\\n/g, '\n')
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .join('\n');
+}
+
 function getCacheTtlMs(response: Response) {
   const cacheControl = response.headers.get('cache-control') ?? '';
   const match = cacheControl.match(/max-age=(\d+)/);
@@ -121,29 +132,31 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private configService: ConfigService,
     private authService: AuthService,
   ) {
-    const verificationKey = configService
-      .get<string>('CLERK_JWT_VERIFICATION_KEY', '')
-      .replace(/\\n/g, '\n');
-    const jwksUrl = configService.get<string>('CLERK_JWKS_URL', '');
+    const jwksUrl = configService.get<string>('CLERK_JWKS_URL', '').trim();
+    const verificationKey = normalizePemKey(
+      configService.get<string>('CLERK_JWT_VERIFICATION_KEY', ''),
+    );
+    const hasJwksUrl = jwksUrl.length > 0;
+    const hasVerificationKey = verificationKey.length > 0;
 
-    if (!verificationKey && !jwksUrl) {
+    if (!hasJwksUrl && !hasVerificationKey) {
       throw new Error('Missing CLERK_JWKS_URL or CLERK_JWT_VERIFICATION_KEY');
     }
 
-    const keyProvider = jwksUrl ? createClerkJwksKeyProvider(jwksUrl) : null;
+    const keyProvider = hasJwksUrl ? createClerkJwksKeyProvider(jwksUrl) : null;
 
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       algorithms: ['RS256'],
-      ...(verificationKey
-        ? { secretOrKey: verificationKey }
-        : {
+      ...(hasJwksUrl
+        ? {
             secretOrKeyProvider: (_request, rawJwtToken, done) => {
               keyProvider!(rawJwtToken)
                 .then((key) => done(null, key))
                 .catch((error: unknown) => done(error as Error));
             },
-          }),
+          }
+        : { secretOrKey: verificationKey }),
     });
   }
 

@@ -13,6 +13,7 @@ export interface UpdateUserRequest {
   email?: string
   username?: string
   name?: string
+  password?: string
   role?: 'USER' | 'ADMIN' | 'EDITOR'
   isActive?: boolean
 }

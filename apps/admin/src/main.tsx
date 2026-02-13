@@ -6,6 +6,7 @@ import {
   QueryCache,
   QueryClient,
   QueryClientProvider,
+  useQueryClient,
 } from '@tanstack/react-query'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { toast } from 'sonner'
@@ -23,6 +24,7 @@ const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
 function ClerkTokenBridge() {
   const { getToken, isLoaded, isSignedIn } = useAuth()
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     if (!isLoaded || !isSignedIn) {
@@ -31,8 +33,9 @@ function ClerkTokenBridge() {
     }
 
     setAccessTokenProvider(async () => getToken())
+    void queryClient.invalidateQueries()
     return () => setAccessTokenProvider(null)
-  }, [getToken, isLoaded, isSignedIn])
+  }, [getToken, isLoaded, isSignedIn, queryClient])
 
   return null
 }
@@ -71,9 +74,9 @@ const queryClient = new QueryClient({
     onError: (error) => {
       if (error instanceof AxiosError) {
         if (error.response?.status === 401) {
-          toast.error('Session expired!')
-          const redirect = `${router.history.location.href}`
-          router.navigate({ to: '/sign-in', search: { redirect } })
+          // For Clerk auth, a transient 401 may occur before token bridge is ready.
+          // Avoid forcing a sign-in redirect loop and let queries retry/refetch.
+          toast.error('Unauthorized request, retrying...')
         }
         if (error.response?.status === 500) {
           toast.error('Internal Server Error!')
